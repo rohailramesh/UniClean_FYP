@@ -6,7 +6,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from flask_cors import CORS
 app = Flask(__name__)
 
-CORS(app)
+CORS(app, origins=["http://localhost:19006"])
 @app.route('/api/ml')
 def predict():
     # Load the iris dataset
@@ -29,29 +29,45 @@ def predict():
     # Print the accuracy of the model
     accuracy = knn.score(X_test, y_test)
 
-    return jsonify({'accuracy': accuracy})
+    response = jsonify({'accuracy': accuracy})
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:19006')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    return response
+
 
 if __name__ == '__main__':
-    app.run(host='10.47.35.156', port=5000)
+    # run app in debug mode on port 5000
+    app.run(debug=True, port=8000, host='0.0.0.0')
+    
+    
+    
+
 # from flask import Flask, request, jsonify
-# import json
 # import numpy as np
 # import tensorflow as tf
+# import logging
+# from flask_cors import CORS
 
 # app = Flask(__name__)
+# CORS(app, origins=["http://localhost:19006"])
 
 # # Load the model outside of the route function for efficiency
-# model_path = "/Users/rohailramesh/Documents/GitHub/UniClean_FYP/backend/models"
+# model_path = "/Users/rohailramesh/Documents/GitHub/UniClean_FYP/backend/models/best_model.h5"
 # model_new = tf.keras.models.load_model(model_path)
 
 # # Define the expected number of columns in your input data
 # expected_column_count = 2  # Replace with the correct number of columns
 
+# # Set up logging
+# logging.basicConfig(level=logging.DEBUG)
 
 # @app.route('/api/predict', methods=['POST'])
 # def predict():
 #     try:
 #         data = request.json
+#         logging.debug("Received Data: %s", data)
+        
 #         cycle_data = data.get("cycleData", [])
 
 #         if not cycle_data:
@@ -73,7 +89,7 @@ if __name__ == '__main__':
 #             return jsonify({"error": "Not enough data for prediction."}), 400
 
 #         for i in range(len(user_input_normalized) - sequence_length + 1):
-#             user_input_sequences.append(user_input_normalized[i : i + sequence_length])
+#             user_input_sequences.append(user_input_normalized[i: i + sequence_length])
 
 #         user_input_sequences = np.array(user_input_sequences)
 
@@ -94,11 +110,20 @@ if __name__ == '__main__':
 #             "predictedOvulationDay": predicted_ovulation_day,
 #         }
 
-#         return jsonify(response_data)
+#         response = jsonify(response_data)
+#         logging.debug("Response: %s", response)
+
+#         response.headers.add('Access-Control-Allow-Origin', 'http://localhost:19006')
+#         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+#         response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+
+#         return response
 
 #     except Exception as e:
+#         logging.error("An error occurred: %s", str(e))
 #         return jsonify({"error": f"An error occurred: {str(e)}"}), 400
 
 
-# if __name__ == "__main__":
-#     app.run(debug=True)
+# if __name__ == '__main__':
+#     # run app in debug mode on port 8000
+#     app.run(debug=True, port=8000, host='0.0.0.0')

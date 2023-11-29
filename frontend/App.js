@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, StyleSheet } from "react-native";
 
 const App = () => {
   const [accuracy, setAccuracy] = useState(null);
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/api/ml");
+      const response = await fetch("http://192.168.1.149:8000/api/ml");
       const data = await response.json();
       setAccuracy(data.accuracy);
     } catch (error) {
@@ -19,7 +19,7 @@ const App = () => {
   }, []);
 
   return (
-    <View>
+    <View style={styles.container}>
       <Text>
         Model Accuracy: {accuracy !== null ? accuracy.toFixed(2) : "Loading..."}
       </Text>
@@ -29,6 +29,11 @@ const App = () => {
 };
 
 export default App;
+const styles = StyleSheet.create({
+  container: {
+    padding: 100,
+  },
+});
 
 // import React, { useEffect, useState } from "react";
 // import Auth from "./screens/Auth";

@@ -69,7 +69,7 @@ export default function CycleDataForm() {
     }
     const dataToSend = JSON.stringify({ cycleData: formData });
 
-    fetch("http://localhost:8000/api/predict/", {
+    fetch("http://192.168.1.149:8000/api/predict/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
