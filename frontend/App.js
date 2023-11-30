@@ -1,112 +1,117 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  FlatList,
+  StyleSheet,
+} from "react-native";
 
 const App = () => {
-  const [accuracy, setAccuracy] = useState(null);
+  const [dataPoints, setDataPoints] = useState([]);
+  const [currentCycle, setCurrentCycle] = useState("");
+  const [currentOvulationDay, setCurrentOvulationDay] = useState("");
+  const [predictedResults, setPredictedResults] = useState(null);
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://192.168.1.149:8000/api/ml");
-      const data = await response.json();
-      setAccuracy(data.accuracy);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const handleAddPair = () => {
+    if (isValidInput(currentCycle) && isValidInput(currentOvulationDay)) {
+      setDataPoints([
+        ...dataPoints,
+        [parseInt(currentCycle), parseInt(currentOvulationDay)],
+      ]);
+      setCurrentCycle("");
+      setCurrentOvulationDay("");
+    } else {
+      alert(
+        "Please enter valid integer values for Cycle Length and Ovulation Day."
+      );
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const isValidInput = (input) => {
+    return /^-?\d+$/.test(input);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      if (dataPoints.length < 5) {
+        alert("Please enter at least 5 data points.");
+        return;
+      }
+
+      const serverUrl = "http://10.47.35.171:8000/api/predict";
+
+      const response = await fetch(serverUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cycleData: dataPoints }),
+      });
+
+      const responseData = await response.json();
+
+      if (responseData) {
+        setPredictedResults(responseData);
+      } else {
+        console.error("No data");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      Alert.alert(
+        "Error",
+        "An error occurred while predicting. Please try again."
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text>
-        Model Accuracy: {accuracy !== null ? accuracy.toFixed(2) : "Loading..."}
-      </Text>
-      <Button title="Refresh" onPress={fetchData} />
+      <TextInput
+        placeholder="Cycle Length"
+        onChangeText={(text) => setCurrentCycle(text)}
+        value={currentCycle}
+        keyboardType="numeric"
+      />
+      <TextInput
+        placeholder="Ovulation Day"
+        onChangeText={(text) => setCurrentOvulationDay(text)}
+        value={currentOvulationDay}
+        keyboardType="numeric"
+      />
+      <Button title="Add Pair" onPress={handleAddPair} />
+      <Button title="Submit" onPress={handleSubmit} />
+
+      {predictedResults && (
+        <View>
+          <Text>
+            Predicted Cycle Length: {predictedResults.predictedCycleLength}
+          </Text>
+          <Text>
+            Predicted Ovulation Day: {predictedResults.predictedOvulationDay}
+          </Text>
+        </View>
+      )}
+
+      <FlatList
+        data={dataPoints}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item, index }) => (
+          <Text>{`Pair ${index + 1}: Cycle Length - ${
+            item[0]
+          }, Ovulation Day - ${item[1]}`}</Text>
+        )}
+      />
     </View>
   );
 };
 
 export default App;
+
 const styles = StyleSheet.create({
   container: {
-    padding: 100,
+    padding: 50,
   },
 });
-
-// import React, { useEffect, useState } from "react";
-// import Auth from "./screens/Auth";
-// import HomePage from "./screens/HomePage";
-// import { supabase } from "./lib/supabase";
-// import { View } from "react-native";
-// import { NavigationContainer } from "@react-navigation/native";
-// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import Products from "./screens/Products";
-// import Guidance from "./screens/Guidance";
-// import Profile from "./screens/Profile";
-
-// const Tab = createBottomTabNavigator();
-
-// export default function App() {
-//   const [session, setSession] = useState(null);
-
-//   useEffect(() => {
-//     supabase.auth.onAuthStateChange((event, session) => {
-//       setSession(session);
-//     });
-
-//     // Fetch the initial session
-//     supabase.auth.getSession().then(({ data: { session } }) => {
-//       setSession(session);
-//     });
-//   }, []);
-
-//   return (
-//     // <View>
-//     //   {session ? <HomePage session={session} /> : <Auth />}
-
-//     // </View>
-//     <NavigationContainer>
-//       {session ? (
-//         <Tab.Navigator>
-//           <Tab.Screen
-//             name=" My Tracker"
-//             children={() => <HomePage session={session} />}
-//             options={{
-//               tabBarLabel: "Tracker",
-//               // headerShown: false,
-//             }}
-//           ></Tab.Screen>
-
-//           <Tab.Screen
-//             name="Hygiene Products"
-//             children={() => <Products session={session} />}
-//             options={{
-//               tabBarLabel: "Hygiene Products",
-//               // headerShown: false,
-//             }}
-//           ></Tab.Screen>
-//           <Tab.Screen
-//             name="UniAI"
-//             children={() => <Guidance session={session} />}
-//             options={{
-//               tabBarLabel: "Guidance",
-//               // headerShown: false,
-//             }}
-//           ></Tab.Screen>
-//           <Tab.Screen
-//             name="Profile"
-//             children={() => <Profile session={session} />}
-//             options={{
-//               tabBarLabel: "Profile",
-//               // headerShown: false,
-//             }}
-//           ></Tab.Screen>
-//         </Tab.Navigator>
-//       ) : (
-//         <Auth />
-//       )}
-//     </NavigationContainer>
-//   );
-// }
