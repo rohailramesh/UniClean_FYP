@@ -9,6 +9,8 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import { DatePickerInput } from "react-native-paper-dates";
+// import { TextInput } from "react-native-paper";
 import { supabase } from "../lib/supabase";
 
 export default function HomePage({ session }) {
@@ -146,16 +148,19 @@ export default function HomePage({ session }) {
         <Text style={styles.welcomeText}>
           {user ? `Welcome, ${user.email}!` : "Welcome!"}
         </Text>
-        <TextInput
-          placeholder="Start Date (YYYY-MM-DD)"
-          onChangeText={(text) => setStartDate(text)}
+        <DatePickerInput
           value={startDate}
+          placeholder="Start Date"
+          displayFormat="YYYY-MM-DD"
+          onChange={(value) => setStartDate(value)}
         />
-        <TextInput
-          placeholder="End Date (YYYY-MM-DD)"
-          onChangeText={(text) => setEndDate(text)}
+        <DatePickerInput
           value={endDate}
+          placeholder="End Date"
+          displayFormat="YYYY-MM-DD"
+          onChange={(value) => setEndDate(value)}
         />
+
         <TextInput
           placeholder="Ovulation Day"
           onChangeText={(text) => setOvulationDay(text)}
