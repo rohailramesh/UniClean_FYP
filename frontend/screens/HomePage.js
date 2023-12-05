@@ -23,17 +23,41 @@ export default function HomePage({ session }) {
 
   const handleAddDataPoint = () => {
     if (startDate && endDate && ovulationDay) {
-      const startDateObj = new Date(startDate);
-      const endDateObj = new Date(endDate);
+      // Add validation to ensure the user is entering the last 10 cycles
+      const currentDate = new Date();
+      const enteredStartDate = new Date(startDate);
+      const enteredEndDate = new Date(endDate);
 
-      const timeDifference = endDateObj.getTime() - startDateObj.getTime();
+      // Check if entered start date is within the last 10 months
+      if (
+        enteredStartDate > currentDate ||
+        enteredStartDate <
+          new Date(currentDate.getFullYear(), currentDate.getMonth() - 10, 1)
+      ) {
+        alert("Please enter a valid start date within the last 10 months.");
+        return;
+      }
+
+      // Check if entered end date is within the last 10 months
+      if (
+        enteredEndDate > currentDate ||
+        enteredEndDate <
+          new Date(currentDate.getFullYear(), currentDate.getMonth() - 10, 1)
+      ) {
+        alert("Please enter a valid end date within the last 10 months.");
+        return;
+      }
+
+      // Calculate cycle length and ovulation date
+      const timeDifference =
+        enteredEndDate.getTime() - enteredStartDate.getTime();
       const dayDifference = Math.round(timeDifference / (1000 * 60 * 60 * 24));
-
       const cycleLength = dayDifference;
 
-      const ovulationDate = new Date(startDate);
+      const ovulationDate = new Date(enteredStartDate);
       ovulationDate.setDate(ovulationDate.getDate() + parseInt(ovulationDay));
 
+      // Continue with your logic for adding data points
       setDataPoints([
         ...dataPoints,
         { startDate, endDate, cycleLength, ovulationDate, ovulationDay },
@@ -95,7 +119,9 @@ export default function HomePage({ session }) {
       const { data: cycleData, error: cycleDataError } = await supabase
         .from("cycle_data")
         .select("cycle_length, ovulation_day")
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .order("end_date", { ascending: false })
+        .range(0, 9); // Fetch the last 10 cycles
 
       if (cycleDataError) {
         console.error("Error fetching cycle data:", cycleDataError);
@@ -130,9 +156,39 @@ export default function HomePage({ session }) {
       });
 
       const responseData = await response.json();
-
       if (responseData) {
+        // Display predicted results
         setPredictedResults(responseData);
+
+        // Calculate and display the predicted start_date and end_date approximation
+        const currentDate = new Date();
+        const predictedStartDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          currentDate.getDate() + responseData.predictedOvulationDay
+        );
+        const predictedEndDate = new Date(
+          predictedStartDate.getFullYear(),
+          predictedStartDate.getMonth(),
+          predictedStartDate.getDate() + responseData.predictedCycleLength
+        );
+
+        if (
+          predictedStartDate > currentDate &&
+          predictedStartDate <
+            new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth() - 10,
+              1
+            ) &&
+          predictedEndDate > currentDate &&
+          predictedEndDate <
+            new Date(currentDate.getFullYear(), currentDate.getMonth() - 10, 1)
+        ) {
+          alert(
+            `Predicted Start Date: ${predictedStartDate.toLocaleDateString()}\nPredicted End Date: ${predictedEndDate.toLocaleDateString()}`
+          );
+        }
       } else {
         console.error("No data");
       }
