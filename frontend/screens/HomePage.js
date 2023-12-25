@@ -20,6 +20,7 @@ export default function HomePage({ session }) {
   const [endDate, setEndDate] = useState("");
   const [ovulationDay, setOvulationDay] = useState("");
   const [predictedResults, setPredictedResults] = useState(null);
+  const [editingIndex, setEditingIndex] = useState(null);
 
   const handleAddDataPoint = () => {
     if (startDate && endDate && ovulationDay) {
@@ -57,11 +58,26 @@ export default function HomePage({ session }) {
       const ovulationDate = new Date(enteredStartDate);
       ovulationDate.setDate(ovulationDate.getDate() + parseInt(ovulationDay));
 
-      // Continue with your logic for adding data points
-      setDataPoints([
-        ...dataPoints,
-        { startDate, endDate, cycleLength, ovulationDate, ovulationDay },
-      ]);
+      if (editingIndex !== null) {
+        // If editing, update the existing data point
+        const updatedDataPoints = [...dataPoints];
+        updatedDataPoints[editingIndex] = {
+          startDate,
+          endDate,
+          cycleLength,
+          ovulationDate,
+          ovulationDay,
+        };
+        setDataPoints(updatedDataPoints);
+        setEditingIndex(null);
+      } else {
+        // If not editing, add a new data point
+        setDataPoints([
+          ...dataPoints,
+          { startDate, endDate, cycleLength, ovulationDate, ovulationDay },
+        ]);
+      }
+
       setStartDate("");
       setEndDate("");
       setOvulationDay("");
@@ -70,6 +86,21 @@ export default function HomePage({ session }) {
         "Please enter valid values for Start Date, End Date, and Ovulation Day."
       );
     }
+  };
+  const handleEditDataPoint = (index) => {
+    // Set the values of the data point to be edited in the form
+    const dataPointToEdit = dataPoints[index];
+    setStartDate(dataPointToEdit.startDate);
+    setEndDate(dataPointToEdit.endDate);
+    setOvulationDay(dataPointToEdit.ovulationDay);
+    setEditingIndex(index);
+  };
+
+  const handleDeleteDataPoint = (index) => {
+    // Implement logic to delete the data point at the specified index
+    const remainingDataPoints = [...dataPoints];
+    remainingDataPoints.splice(index, 1);
+    setDataPoints(remainingDataPoints);
   };
 
   const handleSubmit = async () => {
@@ -292,7 +323,36 @@ export default function HomePage({ session }) {
           value={ovulationDay}
           keyboardType="numeric"
         />
+
         <Button title="Add Data Point" onPress={handleAddDataPoint} />
+        {/* Display entered data points */}
+        {dataPoints.length > 0 && (
+          <View>
+            <Text style={styles.sectionHeader}>Entered Data Points:</Text>
+            <FlatList
+              data={dataPoints}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <View style={styles.dataPointItem}>
+                  <Text>Start Date: {item.startDate.toLocaleDateString()}</Text>
+                  <Text>End Date: {item.endDate.toLocaleDateString()}</Text>
+                  <Text>Ovulation Day: {item.ovulationDay}</Text>
+                  <View style={styles.editButtons}>
+                    <Button
+                      title="Edit"
+                      onPress={() => handleEditDataPoint(index)}
+                    />
+                    <Button
+                      title="Delete"
+                      onPress={() => handleDeleteDataPoint(index)}
+                    />
+                  </View>
+                </View>
+              )}
+            />
+          </View>
+        )}
+
         <Button title="Submit" onPress={handleSubmit} />
         <Button title="Predict" onPress={handlePredictionRequest} />
 
