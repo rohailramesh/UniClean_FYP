@@ -32,7 +32,7 @@ export default function HomePage({ session }) {
       if (
         enteredStartDate > currentDate ||
         enteredStartDate <
-          new Date(currentDate.getFullYear(), currentDate.getMonth() - 10, 1)
+          new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1)
       ) {
         alert("Please enter a valid start date within the last 10 months.");
         return;
@@ -42,7 +42,7 @@ export default function HomePage({ session }) {
       if (
         enteredEndDate > currentDate ||
         enteredEndDate <
-          new Date(currentDate.getFullYear(), currentDate.getMonth() - 10, 1)
+          new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1)
       ) {
         alert("Please enter a valid end date within the last 10 months.");
         return;
@@ -118,7 +118,7 @@ export default function HomePage({ session }) {
       // Fetch cycle data for the current user from the database
       const { data: cycleData, error: cycleDataError } = await supabase
         .from("cycle_data")
-        .select("cycle_length, ovulation_day")
+        .select("start_date, end_date, cycle_length, ovulation_day")
         .eq("user_id", user.id)
         .order("end_date", { ascending: false })
         .range(0, 9); // Fetch the last 10 cycles
@@ -134,6 +134,10 @@ export default function HomePage({ session }) {
         return;
       }
 
+      // Get the latest entered data
+      const latestEntry = cycleData[0];
+      console.log("Latest entry:\n", latestEntry);
+
       // Log the fetched cycleData in the desired format
       const formattedCycleData = cycleData.map(
         ({ cycle_length, ovulation_day }) => [
@@ -142,7 +146,7 @@ export default function HomePage({ session }) {
         ]
       );
 
-      console.log("Fetched cycleData:\n", formattedCycleData);
+      // console.log("Fetched cycleData:\n", formattedCycleData);
 
       // Send fetched cycle data for predictions
       const serverUrl = "http://192.168.1.149:8000/api/predict";
@@ -157,38 +161,27 @@ export default function HomePage({ session }) {
 
       const responseData = await response.json();
       if (responseData) {
+        // Calculate predicted dates based on the latest entry
+        // const { cycle_length, ovulation_day } = latestEntry;
+        const predictedStartDate = new Date(latestEntry.end_date);
+        predictedStartDate.setDate(predictedStartDate.getDate() + 1); // Predicted start date is the day after the last end date
+        const predictedEndDate = new Date(predictedStartDate);
+        predictedEndDate.setDate(
+          predictedEndDate.getDate() + responseData.predictedCycleLength
+        );
+        const predictedOvulationDate = new Date(predictedStartDate);
+        predictedOvulationDate.setDate(
+          predictedStartDate.getDate() + responseData.predictedOvulationDay
+        );
+
         // Display predicted results
-        setPredictedResults(responseData);
-
-        // Calculate and display the predicted start_date and end_date approximation
-        const currentDate = new Date();
-        const predictedStartDate = new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth(),
-          currentDate.getDate() + responseData.predictedOvulationDay
-        );
-        const predictedEndDate = new Date(
-          predictedStartDate.getFullYear(),
-          predictedStartDate.getMonth(),
-          predictedStartDate.getDate() + responseData.predictedCycleLength
-        );
-
-        if (
-          predictedStartDate > currentDate &&
-          predictedStartDate <
-            new Date(
-              currentDate.getFullYear(),
-              currentDate.getMonth() - 10,
-              1
-            ) &&
-          predictedEndDate > currentDate &&
-          predictedEndDate <
-            new Date(currentDate.getFullYear(), currentDate.getMonth() - 10, 1)
-        ) {
-          alert(
-            `Predicted Start Date: ${predictedStartDate.toLocaleDateString()}\nPredicted End Date: ${predictedEndDate.toLocaleDateString()}`
-          );
-        }
+        setPredictedResults({
+          predictedCycleLength: responseData.predictedCycleLength,
+          predictedOvulationDay: responseData.predictedOvulationDay,
+          predictedStartDate: predictedStartDate.toLocaleDateString(),
+          predictedEndDate: predictedEndDate.toLocaleDateString(),
+          predictedOvulationDate: predictedOvulationDate.toLocaleDateString(),
+        });
       } else {
         console.error("No data");
       }
@@ -228,6 +221,7 @@ export default function HomePage({ session }) {
         <Button title="Predict" onPress={handlePredictionRequest} />
 
         {/* Display predicted results */}
+        {/* Display predicted results */}
         {predictedResults && (
           <View>
             <Text>
@@ -236,21 +230,17 @@ export default function HomePage({ session }) {
             <Text>
               Predicted Ovulation Day: {predictedResults.predictedOvulationDay}
             </Text>
+            <Text>
+              Predicted Start Date: {predictedResults.predictedStartDate}
+            </Text>
+            <Text>Predicted End Date: {predictedResults.predictedEndDate}</Text>
+            <Text>
+              Predicted Ovulation Date:{" "}
+              {predictedResults.predictedOvulationDate}
+            </Text>
           </View>
         )}
-        <FlatList
-          data={dataPoints}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <Text>{`Data Point ${index + 1}: Start Date - ${
-              item.startDate
-            }, End Date - ${item.endDate}, Cycle Length - ${
-              item.cycleLength
-            }, Ovulation Date - ${item.ovulationDate}, Ovulation Day - ${
-              item.ovulationDay
-            }`}</Text>
-          )}
-        />
+
         <Button
           containerStyle={styles.buttonContainer}
           buttonStyle={styles.button}
