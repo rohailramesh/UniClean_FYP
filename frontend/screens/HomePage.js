@@ -189,72 +189,6 @@ export default function HomePage({ session }) {
           );
         }
 
-        const existingPrediction = await supabase
-          .from("prediction_data")
-          .select()
-          .eq("user_id", user.id)
-          .eq("predicted_start_date", predictedStartDate)
-          .eq("predicted_end_date", predictedEndDate)
-          .eq("predicted_cycle_length", responseData.predictedCycleLength)
-          .eq("predicted_ovulation_date", predictedOvulationDate)
-          .eq("predicted_ovulation_day", responseData.predictedOvulationDay)
-          .eq("predicted_period_start_date", predictedStartDate)
-          .eq("predicted_luteal_length", predictedLutealPhaseLength)
-          .single();
-
-        if (existingPrediction.data) {
-          // If the exact same entry exists, update the record
-          const { data: updatedData, error: updateError } = await supabase
-            .from("prediction_data")
-            .update({
-              predicted_start_date: predictedStartDate,
-              predicted_end_date: predictedEndDate,
-              predicted_cycle_length: responseData.predictedCycleLength,
-              predicted_ovulation_date: predictedOvulationDate,
-              predicted_ovulation_day: responseData.predictedOvulationDay,
-              predicted_period_start_date: predictedStartDate,
-              predicted_luteal_length: predictedLutealPhaseLength,
-            })
-            .eq("id", existingPrediction.data.id);
-
-          if (updateError) {
-            console.error("Error updating predicted data:", updateError);
-            Alert.alert(
-              "Error",
-              "An error occurred while updating predicted data. Please try again."
-            );
-            return;
-          }
-          alert("Prediction data updated successfully!");
-        } else {
-          // If the exact same entry does not exist, insert a new record
-          const { data: insertedData, error: insertError } = await supabase
-            .from("prediction_data")
-            .insert([
-              {
-                user_id: user.id,
-                predicted_start_date: predictedStartDate,
-                predicted_end_date: predictedEndDate,
-                predicted_cycle_length: responseData.predictedCycleLength,
-                predicted_ovulation_date: predictedOvulationDate,
-                predicted_ovulation_day: responseData.predictedOvulationDay,
-                predicted_period_start_date: predictedStartDate,
-                predicted_luteal_length: predictedLutealPhaseLength,
-              },
-            ]);
-
-          if (insertError) {
-            console.error("Error inserting predicted data:", insertError);
-            Alert.alert(
-              "Error",
-              "An error occurred while storing predicted data. Please try again."
-            );
-            return;
-          }
-
-          alert("Prediction data stored successfully!");
-        }
-
         setPredictedResults({
           predictedCycleLength: responseData.predictedCycleLength,
           predictedOvulationDay: responseData.predictedOvulationDay,
@@ -263,6 +197,67 @@ export default function HomePage({ session }) {
           predictedOvulationDate: predictedOvulationDate.toLocaleDateString(),
           predictedLutealPhaseLength: predictedLutealPhaseLength,
         });
+
+        // Prevent duplicated data from being added to prediction_data table in the database
+        const { data: existingPredictionData } = await supabase
+          .from("prediction_data")
+          .select("user_id")
+          .eq("user_id", user.id);
+
+        if (existingPredictionData.length < 1) {
+          // Insert prediction data into prediction_data table
+          const { data, error } = await supabase
+            .from("prediction_data")
+            .insert([
+              {
+                user_id: user.id,
+                predicted_cycle_length: responseData.predictedCycleLength,
+                predicted_luteal_length: predictedLutealPhaseLength,
+                predicted_ovulation_day: responseData.predictedOvulationDay,
+                predicted_start_date: predictedStartDate,
+                predicted_end_date: predictedEndDate,
+                predicted_ovulation_date: predictedOvulationDate,
+                predicted_period_start_date: predictedStartDate,
+              },
+            ]);
+
+          if (error) {
+            console.error("Error:", error);
+            Alert.alert(
+              "Error",
+              "An error occurred while storing prediction data. Please try again."
+            );
+            return;
+          }
+
+          alert("Prediction data stored successfully!");
+        }
+        // update a pre-existing prediction data row in the database if any of the values have changed instead of inserting a new row
+        else {
+          const { data, error } = await supabase
+            .from("prediction_data")
+            .update({
+              predicted_cycle_length: responseData.predictedCycleLength,
+              predicted_luteal_length: predictedLutealPhaseLength,
+              predicted_ovulation_day: responseData.predictedOvulationDay,
+              predicted_start_date: predictedStartDate,
+              predicted_end_date: predictedEndDate,
+              predicted_ovulation_date: predictedOvulationDate,
+              predicted_period_start_date: predictedStartDate,
+            })
+            .eq("user_id", user.id);
+
+          if (error) {
+            console.error("Error:", error);
+            Alert.alert(
+              "Error",
+              "An error occurred while updating prediction data. Please try again."
+            );
+            return;
+          }
+
+          alert("Prediction data updated successfully!");
+        }
       } else {
         console.error("No data");
       }
