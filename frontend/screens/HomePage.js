@@ -35,7 +35,7 @@ export default function HomePage({ session }) {
         enteredStartDate <
           new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1)
       ) {
-        alert("Please enter a valid start date within the last 10 months.");
+        alert("Please enter a valid start date within the last 12 months.");
         return;
       }
 
@@ -45,7 +45,7 @@ export default function HomePage({ session }) {
         enteredEndDate <
           new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1)
       ) {
-        alert("Please enter a valid end date within the last 10 months.");
+        alert("Please enter a valid end date within the last 12 months.");
         return;
       }
 
@@ -106,7 +106,7 @@ export default function HomePage({ session }) {
   const handleSubmit = async () => {
     try {
       if (dataPoints.length < 1) {
-        alert("Please enter at least 5 data points.");
+        alert("Please enter at least 1 data points.");
         return;
       }
 
@@ -151,10 +151,8 @@ export default function HomePage({ session }) {
         .from("cycle_data")
         .select("start_date, end_date, cycle_length, ovulation_day")
         .eq("user_id", user.id)
-        .order("end_date", { ascending: false })
-        .range(0, 9); // Fetch the last 10 cycles
-
-      // Calculate average cycle length
+        .order("end_date", { ascending: false });
+      // .range(0, 9); // Fetch the last 10 cycles
 
       if (cycleDataError) {
         console.error("Error fetching cycle data:", cycleDataError);
@@ -162,8 +160,8 @@ export default function HomePage({ session }) {
         return;
       }
 
-      if (cycleData.length < 5) {
-        alert("Please enter at least 5 data points.");
+      if (cycleData.length < 10) {
+        alert("Atleast 10 data points are required for accurate prediction.");
         return;
       }
 
