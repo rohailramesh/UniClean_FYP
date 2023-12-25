@@ -123,6 +123,8 @@ export default function HomePage({ session }) {
         .order("end_date", { ascending: false })
         .range(0, 9); // Fetch the last 10 cycles
 
+      // Calculate average cycle length
+
       if (cycleDataError) {
         console.error("Error fetching cycle data:", cycleDataError);
         Alert.alert("Error", "An error occurred while fetching cycle data.");
@@ -187,16 +189,72 @@ export default function HomePage({ session }) {
           );
         }
 
-        // // timed interval alert every 10 seconds if luteal phase length is less than 11 days
-        // if (predictedLutealPhaseLength < 11) {
-        //   setInterval(() => {
-        //     alert(
-        //       "Your predicted luteal phase length is less than 11 days. Please consult your doctor."
-        //     );
-        //   }, 10000);
-        // }
+        const existingPrediction = await supabase
+          .from("prediction_data")
+          .select()
+          .eq("user_id", user.id)
+          .eq("predicted_start_date", predictedStartDate)
+          .eq("predicted_end_date", predictedEndDate)
+          .eq("predicted_cycle_length", responseData.predictedCycleLength)
+          .eq("predicted_ovulation_date", predictedOvulationDate)
+          .eq("predicted_ovulation_day", responseData.predictedOvulationDay)
+          .eq("predicted_period_start_date", predictedStartDate)
+          .eq("predicted_luteal_length", predictedLutealPhaseLength)
+          .single();
 
-        // Display predicted results
+        if (existingPrediction.data) {
+          // If the exact same entry exists, update the record
+          const { data: updatedData, error: updateError } = await supabase
+            .from("prediction_data")
+            .update({
+              predicted_start_date: predictedStartDate,
+              predicted_end_date: predictedEndDate,
+              predicted_cycle_length: responseData.predictedCycleLength,
+              predicted_ovulation_date: predictedOvulationDate,
+              predicted_ovulation_day: responseData.predictedOvulationDay,
+              predicted_period_start_date: predictedStartDate,
+              predicted_luteal_length: predictedLutealPhaseLength,
+            })
+            .eq("id", existingPrediction.data.id);
+
+          if (updateError) {
+            console.error("Error updating predicted data:", updateError);
+            Alert.alert(
+              "Error",
+              "An error occurred while updating predicted data. Please try again."
+            );
+            return;
+          }
+          alert("Prediction data updated successfully!");
+        } else {
+          // If the exact same entry does not exist, insert a new record
+          const { data: insertedData, error: insertError } = await supabase
+            .from("prediction_data")
+            .insert([
+              {
+                user_id: user.id,
+                predicted_start_date: predictedStartDate,
+                predicted_end_date: predictedEndDate,
+                predicted_cycle_length: responseData.predictedCycleLength,
+                predicted_ovulation_date: predictedOvulationDate,
+                predicted_ovulation_day: responseData.predictedOvulationDay,
+                predicted_period_start_date: predictedStartDate,
+                predicted_luteal_length: predictedLutealPhaseLength,
+              },
+            ]);
+
+          if (insertError) {
+            console.error("Error inserting predicted data:", insertError);
+            Alert.alert(
+              "Error",
+              "An error occurred while storing predicted data. Please try again."
+            );
+            return;
+          }
+
+          alert("Prediction data stored successfully!");
+        }
+
         setPredictedResults({
           predictedCycleLength: responseData.predictedCycleLength,
           predictedOvulationDay: responseData.predictedOvulationDay,
@@ -244,7 +302,6 @@ export default function HomePage({ session }) {
         <Button title="Predict" onPress={handlePredictionRequest} />
 
         {/* Display predicted results */}
-        {/* Display predicted results */}
         {predictedResults && (
           <View>
             <Text>
@@ -258,9 +315,12 @@ export default function HomePage({ session }) {
               Predicted Ovulation Day: {predictedResults.predictedOvulationDay}
             </Text>
             <Text>
-              Predicted Start Date: {predictedResults.predictedStartDate}
+              Predicted Cycle/Period Start Date:{" "}
+              {predictedResults.predictedStartDate}
             </Text>
-            <Text>Predicted End Date: {predictedResults.predictedEndDate}</Text>
+            <Text>
+              Predicted Cycle End Date: {predictedResults.predictedEndDate}
+            </Text>
             <Text>
               Predicted Ovulation Date:{" "}
               {predictedResults.predictedOvulationDate}
