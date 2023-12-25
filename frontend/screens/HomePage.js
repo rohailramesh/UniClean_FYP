@@ -174,6 +174,28 @@ export default function HomePage({ session }) {
           predictedStartDate.getDate() + responseData.predictedOvulationDay
         );
 
+        const tempOvulationDate = new Date(predictedOvulationDate);
+        tempOvulationDate.setDate(tempOvulationDate.getDate() + 1);
+
+        const predictedLutealPhaseLength =
+          (tempOvulationDate - predictedStartDate) / (1000 * 60 * 60 * 24);
+
+        // alert if luteal phase length is less than 11 days
+        if (predictedLutealPhaseLength < 11) {
+          alert(
+            "Your predicted luteal phase length is less than 11 days. Please consult your doctor."
+          );
+        }
+
+        // // timed interval alert every 10 seconds if luteal phase length is less than 11 days
+        // if (predictedLutealPhaseLength < 11) {
+        //   setInterval(() => {
+        //     alert(
+        //       "Your predicted luteal phase length is less than 11 days. Please consult your doctor."
+        //     );
+        //   }, 10000);
+        // }
+
         // Display predicted results
         setPredictedResults({
           predictedCycleLength: responseData.predictedCycleLength,
@@ -181,6 +203,7 @@ export default function HomePage({ session }) {
           predictedStartDate: predictedStartDate.toLocaleDateString(),
           predictedEndDate: predictedEndDate.toLocaleDateString(),
           predictedOvulationDate: predictedOvulationDate.toLocaleDateString(),
+          predictedLutealPhaseLength: predictedLutealPhaseLength,
         });
       } else {
         console.error("No data");
@@ -226,6 +249,10 @@ export default function HomePage({ session }) {
           <View>
             <Text>
               Predicted Cycle Length: {predictedResults.predictedCycleLength}
+            </Text>
+            <Text>
+              Predicted Luteal Phase Length:
+              {predictedResults.predictedLutealPhaseLength}
             </Text>
             <Text>
               Predicted Ovulation Day: {predictedResults.predictedOvulationDay}
