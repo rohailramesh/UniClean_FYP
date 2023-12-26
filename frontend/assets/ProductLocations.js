@@ -55,4 +55,18 @@ export const LocationMarkers = [
     longitudeDelta: 0.0421,
     title: "Graduate Centre - Sevent Floor Toilets",
   },
+  {
+    latitude: 51.51723335,
+    longitude: -0.06052212296328227,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Whitechapel Library - Basement Toilets",
+  },
+  {
+    latitude: 51.51769683210811,
+    longitude: -0.060869417983728365,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Garrod Building - Ground Floor Toilets",
+  },
 ];

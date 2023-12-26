@@ -7,7 +7,6 @@ import * as Location from "expo-location";
 export default function Products({ session }) {
   const [userLocation, setUserLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [mapReady, setMapReady] = useState(false);
 
   useEffect(() => {
     const getLocation = async () => {
@@ -22,7 +21,6 @@ export default function Products({ session }) {
 
       let location = await Location.getCurrentPositionAsync({});
       setUserLocation(location.coords);
-      setMapReady(true);
     };
 
     getLocation();
@@ -30,12 +28,12 @@ export default function Products({ session }) {
 
   return (
     <View style={styles.container}>
-      {mapReady && (
+      {userLocation && (
         <MapView
           style={styles.map}
-          initialRegion={{
-            latitude: userLocation?.latitude || 0, // Use 0 as a fallback if location is not available yet
-            longitude: userLocation?.longitude || 0,
+          region={{
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
