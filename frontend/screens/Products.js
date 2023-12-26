@@ -1,59 +1,60 @@
-import React from "react";
-import MapView, { Callout, Circle, Marker } from "react-native-maps";
-import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
-import { supabase } from "../lib/supabase";
-import { Button } from "react-native-elements";
+import React, { useState, useEffect } from "react";
+import MapView, { Marker } from "react-native-maps";
+import { View, StyleSheet, Dimensions } from "react-native";
 import { LocationMarkers } from "../assets/ProductLocations";
+import * as Location from "expo-location";
 
 export default function Products({ session }) {
-  // const user = session?.user;
+  const [userLocation, setUserLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
+  useEffect(() => {
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setUserLocation(location.coords);
+    };
+
+    getLocation();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        // initial region is the current location of the user
-        initialRegion={{
-          latitude: 51.523220481851524,
-          longitude: -0.04035115242004395,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        provider="google"
-      >
-        {LocationMarkers.map((marker, index) => (
-          <Marker
-            key={index}
-            coordinate={{
-              latitude: marker.latitude,
-              longitude: marker.longitude,
-            }}
-            title={marker.title}
-          />
-        ))}
-      </MapView>
+      {userLocation && (
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          provider="google"
+          showsUserLocation
+          showsMyLocationButton
+          showsPointsOfInterest={false}
+        >
+          {LocationMarkers.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: marker.latitude,
+                longitude: marker.longitude,
+              }}
+              title={marker.title}
+            />
+          ))}
+        </MapView>
+      )}
     </View>
   );
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     // flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     marginTop: 50,
-//   },
-//   welcomeText: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     color: "black",
-//     marginBottom: 20,
-//   },
-//   buttonContainer: {
-//     width: "80%",
-//     marginVertical: 20,
-//   },
-// });
 const styles = StyleSheet.create({
   container: {
     flex: 1,
