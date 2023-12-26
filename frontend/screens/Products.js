@@ -3,6 +3,7 @@ import MapView, { Marker, Circle } from "react-native-maps";
 import { View, StyleSheet, Dimensions, Button } from "react-native";
 import { LocationMarkers } from "../assets/ProductLocations";
 import * as Location from "expo-location";
+import customMapStyle from "../assets/MapStyle";
 
 export default function Products({ session }) {
   const [userLocation, setUserLocation] = useState(null);
@@ -100,6 +101,7 @@ export default function Products({ session }) {
               longitudeDelta: 0.0421,
             }}
             provider="google"
+            customMapStyle={customMapStyle}
             showsUserLocation
             showsMyLocationButton
             showsPointsOfInterest={false}
