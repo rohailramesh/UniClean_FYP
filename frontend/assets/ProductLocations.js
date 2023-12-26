@@ -69,4 +69,34 @@ export const LocationMarkers = [
     longitudeDelta: 0.0421,
     title: "Garrod Building - Ground Floor Toilets",
   },
+
+  // Testing
+  {
+    latitude: 37.33325377366843,
+    longitude: -122.02978130788337,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Test 1",
+  },
+  {
+    latitude: 37.335532991224916,
+    longitude: -122.03321802051205,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Test 2",
+  },
+  {
+    latitude: 37.33238355391105,
+    longitude: -122.03973237186572,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Test 3",
+  },
+  {
+    latitude: 37.33491832677828,
+    longitude: -122.0465381000638,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Test 4",
+  },
 ];
