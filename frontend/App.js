@@ -43,7 +43,7 @@ export default function App() {
             children={() => <Products session={session} />}
             options={{
               tabBarLabel: "Hygiene Products",
-              // headerShown: false,
+              headerShown: false,
             }}
           ></Tab.Screen>
           <Tab.Screen
