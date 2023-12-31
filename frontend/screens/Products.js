@@ -81,9 +81,6 @@ export default function Products({ session }) {
     setSecondClosestMarker(distances[1]);
 
     // Count the locations within 1 kilometer
-    const locationsWithinOneKm = distances.filter(
-      (marker) => marker.distance <= 1
-    );
   };
 
   const haversine = (lat1, lon1, lat2, lon2) => {
@@ -158,8 +155,8 @@ export default function Products({ session }) {
                   }}
                   title={`${
                     closestMarker.title
-                  } - ${closestMarker.distance.toFixed(2)} km away`}
-                  description={`${closestMarker.distance.toFixed(2)} km away`}
+                  } - ${closestMarker.distance.toFixed(4)} km away`}
+                  description={`${closestMarker.distance.toFixed(4)} km away`}
                 />
               </>
             )}
@@ -185,9 +182,9 @@ export default function Products({ session }) {
                   }}
                   title={`${
                     secondClosestMarker.title
-                  } - ${secondClosestMarker.distance.toFixed(2)} km away`}
+                  } - ${secondClosestMarker.distance.toFixed(4)} km away`}
                   description={`${secondClosestMarker.distance.toFixed(
-                    2
+                    4
                   )} km away`}
                 />
               </>
@@ -203,10 +200,9 @@ export default function Products({ session }) {
                 title={`${marker.title} - ${marker.distance.toFixed(
                   2
                 )} km away`}
-                description={`${marker.distance.toFixed(2)} km away`}
+                description={`${marker.distance.toFixed(4)} km away`}
               />
             ))}
-            {/* Display the count of locations within 1 kilometer as text */}
             <Text
               style={{
                 position: "absolute",
@@ -217,7 +213,7 @@ export default function Products({ session }) {
                 borderRadius: 1,
                 minHeight: 50,
                 minWidth: "100%",
-                flex: 1, // Allow the container to grow based on content
+                flex: 1,
                 // opacity: 0.8,
                 textAlign: "center",
               }}
