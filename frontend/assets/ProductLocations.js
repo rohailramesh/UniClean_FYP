@@ -99,4 +99,32 @@ export const LocationMarkers = [
     longitudeDelta: 0.0421,
     title: "Test 4",
   },
+  {
+    latitude: 51.50607459538236,
+    longitude: -0.4149992484893352,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Hayes 1",
+  },
+  {
+    latitude: 51.50602731700977,
+    longitude: -0.4147713760123391,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Hayes 2",
+  },
+  {
+    latitude: 51.505952586578836,
+    longitude: -0.4149918977642709,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Hayes 3",
+  },
+  {
+    latitude: 51.50613407455559,
+    longitude: -0.4147787267374035,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+    title: "Hayes 4",
+  },
 ];
