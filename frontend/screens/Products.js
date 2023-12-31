@@ -221,7 +221,7 @@ export default function Products({ session }) {
             <Text
               style={{
                 position: "absolute",
-                top: 110,
+                top: 100,
                 backgroundColor: "white",
                 padding: 10,
                 borderRadius: 1,
@@ -232,7 +232,8 @@ export default function Products({ session }) {
               }}
             >
               {sortedMarkers.filter((marker) => marker.distance <= 1).length}{" "}
-              location(s) within 1 km
+              location(s) within 1 km of your current location{"\n"}
+              Click on the markers to see more details.
             </Text>
           </MapView>
           {/* <Button title="Refresh Map" onPress={handleRefresh} /> */}
