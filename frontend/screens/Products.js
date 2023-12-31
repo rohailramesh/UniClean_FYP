@@ -4,10 +4,8 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  Button,
   Text,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { LocationMarkers } from "../assets/ProductLocations";
 import * as Location from "expo-location";
@@ -17,9 +15,15 @@ export default function Products({ session }) {
   const [userLocation, setUserLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [sortedMarkers, setSortedMarkers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [closestMarker, setClosestMarker] = useState(null);
   const [secondClosestMarker, setSecondClosestMarker] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [mapRegion, setMapRegion] = useState({
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0.001,
+    longitudeDelta: 0.001,
+  });
 
   useEffect(() => {
     const getLocation = async () => {
@@ -36,12 +40,22 @@ export default function Products({ session }) {
       try {
         let initialLocation = await Location.getCurrentPositionAsync({});
         setUserLocation(initialLocation.coords);
+        setMapRegion({
+          latitude: initialLocation.coords.latitude,
+          longitude: initialLocation.coords.longitude,
+          latitudeDelta: 0.001,
+          longitudeDelta: 0.001,
+        });
         setLoading(false);
 
         let location = await Location.watchPositionAsync(
-          {},
+          {
+            accuracy: Location.Accuracy.BestForNavigation,
+            distanceInterval: 1,
+          },
           (newLocation) => {
             setUserLocation(newLocation.coords);
+            updateMarkers(newLocation.coords);
           },
           (error) => {
             console.error("Error getting location:", error);
@@ -79,8 +93,12 @@ export default function Products({ session }) {
     setSortedMarkers(distances);
     setClosestMarker(distances[0]);
     setSecondClosestMarker(distances[1]);
-
-    // Count the locations within 1 kilometer
+    setMapRegion({
+      latitude: location.latitude,
+      longitude: location.longitude,
+      latitudeDelta: 0.001,
+      longitudeDelta: 0.001,
+    });
   };
 
   const haversine = (lat1, lon1, lat2, lon2) => {
@@ -122,12 +140,7 @@ export default function Products({ session }) {
         <>
           <MapView
             style={styles.map}
-            region={{
-              latitude: userLocation.latitude,
-              longitude: userLocation.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
+            region={mapRegion}
             provider="google"
             customMapStyle={customMapStyle}
             showsUserLocation
@@ -157,6 +170,7 @@ export default function Products({ session }) {
                     closestMarker.title
                   } - ${closestMarker.distance.toFixed(4)} km away`}
                   description={`${closestMarker.distance.toFixed(4)} km away`}
+                  pinColor="red"
                 />
               </>
             )}
@@ -186,6 +200,7 @@ export default function Products({ session }) {
                   description={`${secondClosestMarker.distance.toFixed(
                     4
                   )} km away`}
+                  pinColor="blue"
                 />
               </>
             )}
@@ -198,7 +213,7 @@ export default function Products({ session }) {
                   longitude: marker.longitude,
                 }}
                 title={`${marker.title} - ${marker.distance.toFixed(
-                  2
+                  4
                 )} km away`}
                 description={`${marker.distance.toFixed(4)} km away`}
               />
@@ -207,14 +222,12 @@ export default function Products({ session }) {
               style={{
                 position: "absolute",
                 top: 110,
-                // left: 20,
                 backgroundColor: "white",
-                padding: 10, // Adjust padding as needed
+                padding: 10,
                 borderRadius: 1,
                 minHeight: 50,
                 minWidth: "100%",
                 flex: 1,
-                // opacity: 0.8,
                 textAlign: "center",
               }}
             >
@@ -222,7 +235,7 @@ export default function Products({ session }) {
               location(s) within 1 km
             </Text>
           </MapView>
-          <Button title="Refresh Map" onPress={handleRefresh} />
+          {/* <Button title="Refresh Map" onPress={handleRefresh} /> */}
         </>
       )}
     </View>

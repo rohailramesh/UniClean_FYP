@@ -1,6 +1,5 @@
 These are the things that need to be completed/fixed:
-- Map should automatically update everytime the user's location changes to show the closest pickup location in real time
-- A display message 'Screen loading' when user goes on the Pickup screen while the screen loads (first time)
+- Map should automatically update everytime the user's location changes to show (needs to work on the physical phone)
 - Add the bot to the guidance screen
 - Profile section
 - Push notifications
