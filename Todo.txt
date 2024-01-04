@@ -1,6 +1,5 @@
 These are the things that need to be completed/fixed:
-- Map should automatically update everytime the user's location changes to show (needs to work on the physical phone)
 - Add the bot to the guidance screen
-- Profile section
+- Profile section - add more fields
 - Push notifications
 - Alerts within app
