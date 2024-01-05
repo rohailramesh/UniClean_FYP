@@ -8,6 +8,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [username, setUserName] = useState("");
+  const [fullname, setFullName] = useState("");
   // Add more fields that are in the profiles table
 
   const toggleSignUp = () => {
@@ -22,13 +23,17 @@ export default function Auth() {
         email: email,
         password: password,
         options: {
-          data: { username: username },
+          data: {
+            username: username,
+            fullname: fullname,
+          },
         },
       });
       Alert.alert("Success", "Please verify your email and login");
       setEmail("");
       setPassword("");
       setUserName("");
+      setFullName("");
       if (error) Alert.alert(error.message);
     } else {
       const { error } = await supabase.auth.signInWithPassword({
@@ -46,12 +51,20 @@ export default function Auth() {
     <View style={styles.container}>
       <Text style={styles.heading}>{isSignUp ? "Sign Up" : "Sign In"}</Text>
       {isSignUp && (
-        <TextInput
-          value={username}
-          onChangeText={setUserName}
-          placeholder="Username"
-          style={styles.input}
-        />
+        <>
+          <TextInput
+            value={fullname}
+            onChangeText={setFullName}
+            placeholder="Full Name"
+            style={styles.input}
+          />
+          <TextInput
+            value={username}
+            onChangeText={setUserName}
+            placeholder="Username"
+            style={styles.input}
+          />
+        </>
       )}
       <TextInput
         value={email}
