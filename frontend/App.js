@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Auth from "./screens/Auth";
 import HomePage from "./screens/HomePage";
 import { supabase } from "./lib/supabase";
-import { View } from "react-native";
+import { View, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Products from "./screens/Products";
@@ -33,6 +33,16 @@ export default function App() {
             name=" My Tracker"
             children={() => <HomePage session={session} />}
             options={{
+              tabBarIcon: ({ focused }) => (
+                <Image
+                  source={require("./assets/icons/period.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    tintColor: focused ? "#007AFF" : "#8E8E93",
+                  }}
+                />
+              ),
               tabBarLabel: "Tracker",
               headerShown: false,
             }}
@@ -42,15 +52,35 @@ export default function App() {
             name="Hygiene Products"
             children={() => <Products session={session} />}
             options={{
+              tabBarIcon: ({ focused }) => (
+                <Image
+                  source={require("./assets/icons/hygiene-products.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    tintColor: focused ? "#007AFF" : "#8E8E93",
+                  }}
+                />
+              ),
               tabBarLabel: "Hygiene Products",
               headerShown: false,
             }}
           ></Tab.Screen>
           <Tab.Screen
-            name="UniAI"
+            name="UniCare"
             children={() => <Guidance session={session} />}
             options={{
-              tabBarLabel: "Guidance",
+              tabBarIcon: ({ focused }) => (
+                <Image
+                  source={require("./assets/icons/patient.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    tintColor: focused ? "#007AFF" : "#8E8E93",
+                  }}
+                />
+              ),
+              tabBarLabel: "UniCare",
               headerShown: false,
             }}
           ></Tab.Screen>
@@ -58,6 +88,16 @@ export default function App() {
             name="Profile"
             children={() => <Profile session={session} />}
             options={{
+              tabBarIcon: ({ focused }) => (
+                <Image
+                  source={require("./assets/icons/user.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    tintColor: focused ? "#007AFF" : "#8E8E93",
+                  }}
+                />
+              ),
               tabBarLabel: "Profile",
               headerShown: false,
             }}
