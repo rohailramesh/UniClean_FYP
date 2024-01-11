@@ -63,7 +63,7 @@ export default function Auth() {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../assets/loginBG.jpg")}
+        source={require("../assets/loginBG2.png")}
         style={styles.backgroundImage}
       >
         <View style={{ height: 760 }}>
