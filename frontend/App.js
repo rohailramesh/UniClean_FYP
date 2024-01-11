@@ -34,7 +34,7 @@ export default function App() {
             children={() => <HomePage session={session} />}
             options={{
               tabBarLabel: "Tracker",
-              // headerShown: false,
+              headerShown: false,
             }}
           ></Tab.Screen>
 
@@ -51,7 +51,7 @@ export default function App() {
             children={() => <Guidance session={session} />}
             options={{
               tabBarLabel: "Guidance",
-              // headerShown: false,
+              headerShown: false,
             }}
           ></Tab.Screen>
           <Tab.Screen
@@ -59,7 +59,7 @@ export default function App() {
             children={() => <Profile session={session} />}
             options={{
               tabBarLabel: "Profile",
-              // headerShown: false,
+              headerShown: false,
             }}
           ></Tab.Screen>
         </Tab.Navigator>
