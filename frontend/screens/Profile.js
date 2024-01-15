@@ -124,6 +124,11 @@ export default function Profile({ session }) {
             ) : (
               <Text style={styles.headerText}>{username}'s Profile</Text>
             )}
+            <IconButton
+              icon="location-exit"
+              iconColor="grey"
+              onPress={() => supabase.auth.signOut()}
+            />
           </View>
           <View style={styles.fieldContainer}>
             <Text style={styles.boldText}>Name:</Text>
@@ -159,6 +164,7 @@ export default function Profile({ session }) {
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Enter New Password"
+                placeholderTextColor={"silver"}
                 secureTextEntry
                 style={styles.input}
               />
@@ -169,6 +175,7 @@ export default function Profile({ session }) {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 placeholder="Confirm New Password"
+                placeholderTextColor={"silver"}
                 secureTextEntry
                 style={styles.input}
               />
@@ -217,7 +224,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   button: {
-    backgroundColor: "black", // Customize button background color
+    backgroundColor: "black",
     marginLeft: 10,
     marginRight: 10,
   },

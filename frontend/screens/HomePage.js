@@ -160,7 +160,7 @@ export default function HomePage({ session }) {
         return;
       }
 
-      if (cycleData.length < 10) {
+      if (cycleData.length < 5) {
         alert("Atleast 10 data points are required for accurate prediction.");
         return;
       }
@@ -180,7 +180,7 @@ export default function HomePage({ session }) {
       // console.log("Fetched cycleData:\n", formattedCycleData);
 
       // Send fetched cycle data for predictions
-      const serverUrl = "http://192.168.1.149:8000/api/predict";
+      const serverUrl = "http://192.168.1.123:8000/api/predict";
 
       const response = await fetch(serverUrl, {
         method: "POST",
@@ -297,99 +297,83 @@ export default function HomePage({ session }) {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <Text style={styles.welcomeText}>
-          {user ? `Welcome, ${user.email}!` : "Welcome!"}
-        </Text>
-        <DatePickerInput
-          value={startDate}
-          placeholder="Start Date"
-          displayFormat="YYYY-MM-DD"
-          onChange={(value) => setStartDate(value)}
-        />
-        <DatePickerInput
-          value={endDate}
-          placeholder="End Date"
-          displayFormat="YYYY-MM-DD"
-          onChange={(value) => setEndDate(value)}
-        />
+    // <View style={styles.container}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <DatePickerInput
+        value={startDate}
+        placeholder="Start Date"
+        displayFormat="YYYY-MM-DD"
+        onChange={(value) => setStartDate(value)}
+      />
+      <DatePickerInput
+        value={endDate}
+        placeholder="End Date"
+        displayFormat="YYYY-MM-DD"
+        onChange={(value) => setEndDate(value)}
+      />
 
-        <TextInput
-          placeholder="Ovulation Day"
-          onChangeText={(text) => setOvulationDay(text)}
-          value={ovulationDay}
-          keyboardType="numeric"
-        />
+      <TextInput
+        placeholder="Ovulation Day"
+        onChangeText={(text) => setOvulationDay(text)}
+        value={ovulationDay}
+        keyboardType="numeric"
+      />
 
-        <Button title="Add Data Point" onPress={handleAddDataPoint} />
-        {/* Display entered data points */}
-        {dataPoints.length > 0 && (
-          <View>
-            <Text style={styles.sectionHeader}>Entered Data Points:</Text>
-            <FlatList
-              data={dataPoints}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item, index }) => (
-                <View style={styles.dataPointItem}>
-                  <Text>Start Date: {item.startDate.toLocaleDateString()}</Text>
-                  <Text>End Date: {item.endDate.toLocaleDateString()}</Text>
-                  <Text>Ovulation Day: {item.ovulationDay}</Text>
-                  <View style={styles.editButtons}>
-                    <Button
-                      title="Edit"
-                      onPress={() => handleEditDataPoint(index)}
-                    />
-                    <Button
-                      title="Delete"
-                      onPress={() => handleDeleteDataPoint(index)}
-                    />
-                  </View>
-                </View>
-              )}
+      <Button title="Add Data Point" onPress={handleAddDataPoint} />
+
+      {dataPoints.map((item, index) => (
+        <View key={index} style={styles.dataPointItem}>
+          <Text>Start Date: {item.startDate.toLocaleDateString()}</Text>
+          <Text>End Date: {item.endDate.toLocaleDateString()}</Text>
+          <Text>Ovulation Day: {item.ovulationDay}</Text>
+          <View style={styles.editButtons}>
+            <Button title="Edit" onPress={() => handleEditDataPoint(index)} />
+            <Button
+              title="Delete"
+              onPress={() => handleDeleteDataPoint(index)}
             />
           </View>
-        )}
+        </View>
+      ))}
 
-        <Button title="Submit" onPress={handleSubmit} />
-        <Button title="Predict" onPress={handlePredictionRequest} />
+      <Button title="Submit" onPress={handleSubmit} />
+      <Button title="Predict" onPress={handlePredictionRequest} />
 
-        {/* Display predicted results */}
-        {predictedResults && (
-          <View>
-            <Text>
-              Predicted Cycle Length: {predictedResults.predictedCycleLength}
-            </Text>
-            <Text>
-              Predicted Luteal Phase Length:
-              {predictedResults.predictedLutealPhaseLength}
-            </Text>
-            <Text>
-              Predicted Ovulation Day: {predictedResults.predictedOvulationDay}
-            </Text>
-            <Text>
-              Predicted Cycle/Period Start Date:{" "}
-              {predictedResults.predictedStartDate}
-            </Text>
-            <Text>
-              Predicted Cycle End Date: {predictedResults.predictedEndDate}
-            </Text>
-            <Text>
-              Predicted Ovulation Date:{" "}
-              {predictedResults.predictedOvulationDate}
-            </Text>
-          </View>
-        )}
+      {/* Display predicted results */}
+      {predictedResults && (
+        <View>
+          <Text>
+            Predicted Cycle Length: {predictedResults.predictedCycleLength}
+          </Text>
+          <Text>
+            Predicted Luteal Phase Length:
+            {predictedResults.predictedLutealPhaseLength}
+          </Text>
+          <Text>
+            Predicted Ovulation Day: {predictedResults.predictedOvulationDay}
+          </Text>
+          <Text>
+            Predicted Cycle/Period Start Date:{" "}
+            {predictedResults.predictedStartDate}
+          </Text>
+          <Text>
+            Predicted Cycle End Date: {predictedResults.predictedEndDate}
+          </Text>
+          <Text>
+            Predicted Ovulation Date: {predictedResults.predictedOvulationDate}
+          </Text>
+        </View>
+      )}
 
-        <Button
-          containerStyle={styles.buttonContainer}
-          buttonStyle={styles.button}
-          titleStyle={styles.buttonText}
-          onPress={() => supabase.auth.signOut()}
-          title="Sign Out"
-        />
-      </ScrollView>
-    </View>
+      <Button
+        containerStyle={styles.buttonContainer}
+        buttonStyle={styles.button}
+        titleStyle={styles.buttonText}
+        onPress={() => supabase.auth.signOut()}
+        title="Sign Out"
+      />
+    </ScrollView>
+    // </View>
   );
 }
 

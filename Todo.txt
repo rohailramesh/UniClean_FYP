@@ -1,5 +1,39 @@
-These are the things that need to be completed/fixed:
-- Add the bot to the guidance screen
-- Profile section - add more fields
-- Push notifications
-- Alerts within app
+User Registration:
+-̶ I̶m̶p̶l̶e̶m̶e̶n̶t̶ u̶s̶e̶r̶ r̶e̶g̶i̶s̶t̶r̶a̶t̶i̶o̶n̶ f̶u̶n̶c̶t̶i̶o̶n̶a̶l̶i̶t̶y̶.̶
+-̶ D̶e̶v̶e̶l̶o̶p̶ a̶ s̶e̶c̶u̶r̶e̶ l̶o̶g̶i̶n̶ s̶y̶s̶t̶e̶m̶ u̶s̶i̶n̶g̶ e̶m̶a̶i̶l̶ a̶n̶d̶ p̶a̶s̶s̶w̶o̶r̶d̶.̶
+-̶ E̶n̶s̶u̶r̶e̶ p̶a̶s̶s̶w̶o̶r̶d̶ e̶n̶c̶r̶y̶p̶t̶i̶o̶n̶ f̶o̶r̶ s̶e̶c̶u̶r̶i̶t̶y̶.̶
+
+Navigating UniClean Screens:
+-̶ C̶r̶e̶a̶t̶e̶ t̶h̶e̶ m̶a̶i̶n̶ n̶a̶v̶i̶g̶a̶t̶i̶o̶n̶ s̶t̶r̶u̶c̶t̶u̶r̶e̶ f̶o̶r̶ T̶r̶a̶c̶k̶i̶n̶g̶,̶ P̶r̶o̶d̶u̶c̶t̶s̶,̶ G̶u̶i̶d̶a̶n̶c̶e̶,̶ a̶n̶d̶ P̶r̶o̶f̶i̶l̶e̶ s̶c̶r̶e̶e̶n̶s̶.̶
+-̶ I̶m̶p̶l̶e̶m̶e̶n̶t̶ u̶s̶e̶r̶ a̶u̶t̶h̶e̶n̶t̶i̶c̶a̶t̶i̶o̶n̶ t̶o̶ c̶o̶n̶t̶r̶o̶l̶ a̶c̶c̶e̶s̶s̶ t̶o̶ e̶a̶c̶h̶ s̶c̶r̶e̶e̶n̶.̶
+
+Tracking Screen:
+-̶ D̶e̶s̶i̶g̶n̶ a̶n̶d̶ i̶m̶p̶l̶e̶m̶e̶n̶t̶ t̶h̶e̶ T̶r̶a̶c̶k̶i̶n̶g̶ s̶c̶r̶e̶e̶n̶ i̶n̶t̶e̶r̶f̶a̶c̶e̶.̶
+-̶ S̶e̶t̶ u̶p̶ i̶n̶p̶u̶t̶ f̶o̶r̶m̶s̶ f̶o̶r̶ u̶s̶e̶r̶s̶ t̶o̶ e̶n̶t̶e̶r̶ s̶t̶a̶r̶t̶ a̶n̶d̶ e̶n̶d̶ d̶a̶t̶e̶s̶ o̶f̶ m̶e̶n̶s̶t̶r̶u̶a̶l̶ c̶y̶c̶l̶e̶s̶.̶
+-̶ D̶e̶v̶e̶l̶o̶p̶ a̶ m̶e̶c̶h̶a̶n̶i̶s̶m̶ t̶o̶ c̶a̶l̶c̶u̶l̶a̶t̶e̶ c̶y̶c̶l̶e̶ l̶e̶n̶g̶t̶h̶ a̶n̶d̶ e̶s̶t̶i̶m̶a̶t̶e̶ o̶v̶u̶l̶a̶t̶i̶o̶n̶.̶
+- Prompt users for at least 10 previous data points during initial registration.
+- Allow users to continuously input data for improved prediction accuracy.
+-̶ I̶m̶p̶l̶e̶m̶e̶n̶t̶ a̶ p̶r̶e̶d̶i̶c̶t̶i̶v̶e̶ m̶o̶d̶e̶l̶ t̶o̶ a̶s̶s̶e̶s̶s̶ u̶p̶c̶o̶m̶i̶n̶g̶ m̶e̶n̶s̶t̶r̶u̶a̶l̶ c̶y̶c̶l̶e̶s̶.̶
+- Generate alerts for luteal phase length less than 11 days.
+- Set up continuous alerts for potential fertility issues or miscarriage.
+- Integrate a system for users to seek medical attention through the app.
+
+Products Screen:
+-̶ C̶r̶e̶a̶t̶e̶ t̶h̶e̶ P̶r̶o̶d̶u̶c̶t̶s̶ s̶c̶r̶e̶e̶n̶ i̶n̶t̶e̶r̶f̶a̶c̶e̶.̶
+- Implement functionality for users to enter a secondary university email in the Profile screen.
+- Develop a system to verify university email for access to the Products screen.
+- Enable timed notifications for users to collect free period products based on cycle predictions.
+- Provide real-time updates on stock availability.
+-̶ D̶e̶s̶i̶g̶n̶ a̶ m̶a̶p̶ o̶r̶ l̶o̶c̶a̶t̶i̶o̶n̶-̶b̶a̶s̶e̶d̶ s̶y̶s̶t̶e̶m̶ f̶o̶r̶ u̶s̶e̶r̶s̶ t̶o̶ f̶i̶n̶d̶ n̶e̶a̶r̶b̶y̶ c̶o̶l̶l̶e̶c̶t̶i̶o̶n̶ p̶o̶i̶n̶t̶s̶.̶
+
+Guidance Screen:
+-̶ D̶e̶s̶i̶g̶n̶ a̶n̶d̶ i̶m̶p̶l̶e̶m̶e̶n̶t̶ t̶h̶e̶ G̶u̶i̶d̶a̶n̶c̶e̶ s̶c̶r̶e̶e̶n̶ i̶n̶t̶e̶r̶f̶a̶c̶e̶.̶
+- Create a chatbot for personalized advice based on user-entered data.
+- Ensure the chatbot provides contextual information about menstrual health.
+- Implement a secure chat environment for user engagement.
+
+Profile Screen:
+-̶ D̶e̶v̶e̶l̶o̶p̶ t̶h̶e̶ P̶r̶o̶f̶i̶l̶e̶ s̶c̶r̶e̶e̶n̶ i̶n̶t̶e̶r̶f̶a̶c̶e̶ f̶o̶r̶ u̶s̶e̶r̶s̶ t̶o̶ m̶a̶n̶a̶g̶e̶ p̶e̶r̶s̶o̶n̶a̶l̶ i̶n̶f̶o̶r̶m̶a̶t̶i̶o̶n̶.̶
+-̶ A̶l̶l̶o̶w̶ u̶s̶e̶r̶s̶ t̶o̶ c̶h̶a̶n̶g̶e̶ p̶a̶s̶s̶w̶o̶r̶d̶s̶ a̶n̶d̶ u̶p̶d̶a̶t̶e̶ u̶s̶e̶r̶n̶a̶m̶e̶s̶.̶
+- Implement the addition of a secondary university email with verification.
+- Provide an option for users to request account deletion and associated data.

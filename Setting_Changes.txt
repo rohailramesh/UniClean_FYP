@@ -1,0 +1,4 @@
+To run the backend the IP address must be changes at three different places when the location changes
+- package.json
+- cycleDataForm.js
+- HomePage.js
