@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { supabase } from "../lib/supabase";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
-  Alert,
   Text,
   TextInput,
   ScrollView,
   ImageBackground,
 } from "react-native";
 import { Button } from "react-native-elements";
+import { supabase } from "../lib/supabase";
 import { IconButton } from "react-native-paper";
+
 export default function Profile({ session }) {
   const [loading, setLoading] = useState(true);
   const [username, setUserName] = useState("");
@@ -34,7 +34,7 @@ export default function Profile({ session }) {
 
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`id, username, email, fullname, uniEmail`) // Include the 'name' field
+        .select(`id, username, email, fullname, uniEmail`)
         .eq("id", session.user.id)
         .single();
 
@@ -48,7 +48,7 @@ export default function Profile({ session }) {
         setUniEmail(data.uniEmail);
       }
     } catch (error) {
-      Alert.alert(error.message);
+      console.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -62,21 +62,19 @@ export default function Profile({ session }) {
 
       let { error } = await supabase.from("profiles").upsert({
         id: session?.user.id,
-        username: username,
+        // username: username,
         uniEmail: uniEmail,
       });
 
       if (error) {
         throw error;
       } else {
-        setUserName(username);
-        Alert.alert(
-          "Username saved sucessfully",
-          "Log back in to see updated username"
-        );
+        // setUserName(username);
+        setUniEmail(uniEmail);
+        alert("Profile updated successfully");
       }
     } catch (error) {
-      Alert.alert(error.message);
+      console.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -101,10 +99,11 @@ export default function Profile({ session }) {
       if (error) {
         throw error;
       } else {
-        Alert.alert("Success", "Password updated");
+        alert("Password updated successfully");
+        // console.log("Password updated successfully");
       }
     } catch (error) {
-      Alert.alert(error.message);
+      console.error(error.message);
     } finally {
       setLoading(false);
       setPassword("");
@@ -114,139 +113,139 @@ export default function Profile({ session }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        {/* <Text>{session?.user?.email || "No user"}</Text> */}
-        <View>
-          {!username ? <Text>Profile</Text> : <Text>{username}'s Profile</Text>}
-        </View>
-        <View>
+      <ImageBackground
+        source={require("../assets/profile-bg2.jpg")}
+        style={styles.backgroundImage}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={styles.headerContainer}>
+            {!username ? (
+              <Text style={styles.headerText}>Profile</Text>
+            ) : (
+              <Text style={styles.headerText}>{username}'s Profile</Text>
+            )}
+          </View>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.boldText}>Name:</Text>
+            <TextInput
+              value={fullname}
+              placeholder={fullname}
+              style={styles.input}
+              editable={false}
+            />
+          </View>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.boldText}>Email:</Text>
+            <TextInput
+              value={email}
+              placeholder={email}
+              style={styles.input}
+              editable={false}
+            />
+          </View>
+          <View style={styles.fieldContainer}>
+            <Text style={styles.boldText}>University Email:</Text>
+            <TextInput
+              value={uniEmail}
+              onChangeText={setUniEmail}
+              placeholder={uniEmail}
+              style={styles.input}
+            />
+          </View>
           <View>
-            <View>
-              <Text>Email:</Text>
-              <TextInput value={email} placeholder={email} editable={false} />
-              <Text>University Email:</Text>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.boldText}>New Password:</Text>
               <TextInput
-                value={uniEmail}
-                onChangeText={setUniEmail}
-                placeholder="Enter University Email"
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Enter New Password"
+                secureTextEntry
+                style={styles.input}
+              />
+            </View>
+            <View style={styles.fieldContainer}>
+              <Text style={styles.boldText}>Confirm Password:</Text>
+              <TextInput
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder="Confirm New Password"
+                secureTextEntry
+                style={styles.input}
               />
             </View>
           </View>
-          <View>
-            <View>
-              <Text>Username:</Text>
-              <TextInput
-                value={username}
-                onChangeText={setUserName}
-                placeholder="Enter Username"
-              />
-            </View>
+          <View style={styles.inlineInputContainer}>
             <Button
-              title="Save Username"
-              onPress={() => {
-                setUserName(username); // Set the nameSaved state to true
-                updateProfile();
-              }}
+              title="Update Uni Email"
+              onPress={updateProfile}
+              buttonStyle={[styles.button, styles.roundedButton]}
+            />
+            <Button
+              title="Update Password"
+              onPress={updatePassword}
+              buttonStyle={[styles.button, styles.roundedButton]}
             />
           </View>
-        </View>
-        <View>
-          <View>
-            <Text>New Password:</Text>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Enter New Password"
-              secureTextEntry
-              // style={styles.input}
-            />
-          </View>
-          <View>
-            <Text>Confirm Password:</Text>
-            <TextInput
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="Confirm New Password"
-              secureTextEntry
-              // style={styles.input}
-            />
-          </View>
-          <Button
-            title="Update Password"
-            onPress={updatePassword}
-            // buttonStyle={[styles.button, styles.roundedButton]}
-          />
-          <Button
-            containerStyle={styles.buttonContainer}
-            buttonStyle={styles.button}
-            titleStyle={styles.buttonText}
-            onPress={() => supabase.auth.signOut()}
-            title="Sign Out"
-          />
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </ImageBackground>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    justifyContent: "center",
+    flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover", // or "stretch"
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 20,
+    marginTop: 70,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  button: {
+    backgroundColor: "black", // Customize button background color
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  buttonText: {
+    color: "white", // Customize button text color
+  },
+  inlineInputContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 2,
+    width: "100%",
+    paddingLeft: 20,
+    paddingRight: 20,
     marginTop: 50,
   },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "black",
-    marginBottom: 20,
+  fieldContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
-  buttonContainer: {
-    width: "80%",
-    marginVertical: 20,
+  boldText: {
+    fontWeight: "bold",
   },
 });
-
-// import React from "react";
-// import { View, Text, StyleSheet, ScrollView } from "react-native";
-// import { supabase } from "../lib/supabase";
-// import { Button } from "react-native-elements";
-
-// export default function Profile({ session }) {
-//   //   const user = session?.user;
-
-//   return (
-//     <View style={styles.container}>
-//       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-//         <Text style={styles.welcomeText}>Profile Screen</Text>
-//         <Button
-//           containerStyle={styles.buttonContainer}
-//           buttonStyle={styles.button}
-//           titleStyle={styles.buttonText}
-//           onPress={() => supabase.auth.signOut()}
-//           title="Sign Out"
-//         />
-//       </ScrollView>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     // flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     marginTop: 50,
-//   },
-//   welcomeText: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     color: "black",
-//     marginBottom: 20,
-//   },
-//   buttonContainer: {
-//     width: "80%",
-//     marginVertical: 20,
-//   },
-// });
