@@ -47,25 +47,6 @@ export default function App() {
               headerShown: false,
             }}
           ></Tab.Screen>
-
-          <Tab.Screen
-            name="Hygiene Products"
-            children={() => <Products session={session} />}
-            options={{
-              tabBarIcon: ({ focused }) => (
-                <Image
-                  source={require("./assets/icons/hygiene-products.png")}
-                  style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: focused ? "#007AFF" : "#8E8E93",
-                  }}
-                />
-              ),
-              tabBarLabel: "Hygiene Products",
-              headerShown: false,
-            }}
-          ></Tab.Screen>
           <Tab.Screen
             name="UniCare"
             children={() => <Guidance session={session} />}
@@ -84,6 +65,25 @@ export default function App() {
               headerShown: false,
             }}
           ></Tab.Screen>
+          <Tab.Screen
+            name="Hygiene Products"
+            children={() => <Products session={session} />}
+            options={{
+              tabBarIcon: ({ focused }) => (
+                <Image
+                  source={require("./assets/icons/hygiene-products.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    tintColor: focused ? "#007AFF" : "#8E8E93",
+                  }}
+                />
+              ),
+              tabBarLabel: "Hygiene Products",
+              headerShown: false,
+            }}
+          ></Tab.Screen>
+
           <Tab.Screen
             name="Profile"
             children={() => <Profile session={session} />}

@@ -114,7 +114,7 @@ export default function Profile({ session }) {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../assets/profile-bg2.jpg")}
+        source={require("../assets/homepage-bg1.jpg")}
         style={styles.backgroundImage}
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -185,12 +185,12 @@ export default function Profile({ session }) {
             <Button
               title="Update Uni Email"
               onPress={updateProfile}
-              buttonStyle={[styles.button, styles.roundedButton]}
+              buttonStyle={[styles.button]}
             />
             <Button
               title="Update Password"
               onPress={updatePassword}
-              buttonStyle={[styles.button, styles.roundedButton]}
+              buttonStyle={[styles.button]}
             />
           </View>
         </ScrollView>
@@ -228,13 +228,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
   },
-  buttonText: {
-    color: "white", // Customize button text color
-  },
+
   inlineInputContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 2,
+    gap: 3,
     width: "100%",
     paddingLeft: 20,
     paddingRight: 20,

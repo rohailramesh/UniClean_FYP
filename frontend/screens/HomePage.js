@@ -3,15 +3,17 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  // Button,
   Alert,
   FlatList,
   StyleSheet,
   ScrollView,
+  ImageBackground,
 } from "react-native";
 import { DatePickerInput } from "react-native-paper-dates";
-// import { TextInput } from "react-native-paper";
+import { IconButton, Card } from "react-native-paper";
 import { supabase } from "../lib/supabase";
+import { Button } from "react-native-elements";
 
 export default function HomePage({ session }) {
   const user = session?.user;
@@ -297,100 +299,218 @@ export default function HomePage({ session }) {
   };
 
   return (
-    // <View style={styles.container}>
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <DatePickerInput
-        value={startDate}
-        placeholder="Start Date"
-        displayFormat="YYYY-MM-DD"
-        onChange={(value) => setStartDate(value)}
-      />
-      <DatePickerInput
-        value={endDate}
-        placeholder="End Date"
-        displayFormat="YYYY-MM-DD"
-        onChange={(value) => setEndDate(value)}
-      />
-
-      <TextInput
-        placeholder="Ovulation Day"
-        onChangeText={(text) => setOvulationDay(text)}
-        value={ovulationDay}
-        keyboardType="numeric"
-      />
-
-      <Button title="Add Data Point" onPress={handleAddDataPoint} />
-
-      {dataPoints.map((item, index) => (
-        <View key={index} style={styles.dataPointItem}>
-          <Text>Start Date: {item.startDate.toLocaleDateString()}</Text>
-          <Text>End Date: {item.endDate.toLocaleDateString()}</Text>
-          <Text>Ovulation Day: {item.ovulationDay}</Text>
-          <View style={styles.editButtons}>
-            <Button title="Edit" onPress={() => handleEditDataPoint(index)} />
-            <Button
-              title="Delete"
-              onPress={() => handleDeleteDataPoint(index)}
+    <ImageBackground
+      source={require("../assets/homepage-bg1.jpg")}
+      style={styles.backgroundImage}
+    >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={styles.headerContainer}>
+          <Text>UniClean</Text>
+          <Text>Welcome, {user?.user_metadata.username}</Text>
+          <IconButton
+            icon="location-exit"
+            iconColor="black"
+            onPress={() => supabase.auth.signOut()}
+          />
+        </View>
+        <View style={styles.container}>
+          <View style={styles.inlineText}>
+            <Text>Cycle Start Date</Text>
+            <Text>Cycle End Date</Text>
+          </View>
+          <View style={styles.inlineInputContainer}>
+            <DatePickerInput
+              value={startDate}
+              placeholder="Start Date"
+              displayFormat="YYYY-MM-DD"
+              onChange={(value) => setStartDate(value)}
+              style={styles.datePciker}
+            />
+            <DatePickerInput
+              value={endDate}
+              placeholder="End Date"
+              displayFormat="YYYY-MM-DD"
+              onChange={(value) => setEndDate(value)}
+              style={styles.datePciker}
             />
           </View>
+          <TextInput
+            placeholder="Ovulation Day... (Eg: 14)"
+            placeholderTextColor={"black"}
+            onChangeText={(text) => setOvulationDay(text)}
+            value={ovulationDay}
+            keyboardType="numeric"
+            style={styles.ovulationDateInput}
+          />
+          <View style={styles.buttons}>
+            <Button
+              title="Add cycle(s)"
+              onPress={handleAddDataPoint}
+              color={"white"}
+              buttonStyle={[styles.button]}
+            />
+            <Button
+              title="Save cycle(s)"
+              onPress={handleSubmit}
+              color={"white"}
+              buttonStyle={[styles.button]}
+            />
+          </View>
+          <View style={styles.cycleCard}>
+            {dataPoints.map((item, index) => (
+              <Card key={index} style={styles.card}>
+                <Card.Content>
+                  <Text>Start Date: {item.startDate.toLocaleDateString()}</Text>
+                  <Text>End Date: {item.endDate.toLocaleDateString()}</Text>
+                  <Text>Ovulation Day: {item.ovulationDay}</Text>
+                </Card.Content>
+                <Card.Actions style={styles.editButtons}>
+                  <Button
+                    title="Edit"
+                    onPress={() => handleEditDataPoint(index)}
+                    buttonStyle={[styles.button]}
+                  />
+                  <Button
+                    title="Delete"
+                    onPress={() => handleDeleteDataPoint(index)}
+                    buttonStyle={[styles.button]}
+                  />
+                </Card.Actions>
+              </Card>
+            ))}
+          </View>
+
+          <Button
+            title="Predict"
+            onPress={handlePredictionRequest}
+            color={"white"}
+            buttonStyle={[styles.button]}
+          />
+          {/* Display predicted results */}
+          {predictedResults && (
+            <View>
+              <Card style={styles.predictionCard}>
+                <Card.Content>
+                  <Text style={styles.predictionText}>
+                    Cycle Length: {predictedResults.predictedCycleLength}
+                  </Text>
+                  <Text style={styles.predictionText}>
+                    Luteal Phase Length:{" "}
+                    {predictedResults.predictedLutealPhaseLength}
+                  </Text>
+                  <Text style={styles.predictionText}>
+                    Ovulation Day: {predictedResults.predictedOvulationDay}
+                  </Text>
+                  <Text style={styles.predictionText}>
+                    Cycle/Period Start Date:{" "}
+                    {predictedResults.predictedStartDate}
+                  </Text>
+                  <Text style={styles.predictionText}>
+                    Cycle End Date: {predictedResults.predictedEndDate}
+                  </Text>
+                  <Text style={styles.predictionText}>
+                    Ovulation Date: {predictedResults.predictedOvulationDate}
+                  </Text>
+                </Card.Content>
+              </Card>
+            </View>
+          )}
         </View>
-      ))}
-
-      <Button title="Submit" onPress={handleSubmit} />
-      <Button title="Predict" onPress={handlePredictionRequest} />
-
-      {/* Display predicted results */}
-      {predictedResults && (
-        <View>
-          <Text>
-            Predicted Cycle Length: {predictedResults.predictedCycleLength}
-          </Text>
-          <Text>
-            Predicted Luteal Phase Length:
-            {predictedResults.predictedLutealPhaseLength}
-          </Text>
-          <Text>
-            Predicted Ovulation Day: {predictedResults.predictedOvulationDay}
-          </Text>
-          <Text>
-            Predicted Cycle/Period Start Date:{" "}
-            {predictedResults.predictedStartDate}
-          </Text>
-          <Text>
-            Predicted Cycle End Date: {predictedResults.predictedEndDate}
-          </Text>
-          <Text>
-            Predicted Ovulation Date: {predictedResults.predictedOvulationDate}
-          </Text>
-        </View>
-      )}
-
-      <Button
-        containerStyle={styles.buttonContainer}
-        buttonStyle={styles.button}
-        titleStyle={styles.buttonText}
-        onPress={() => supabase.auth.signOut()}
-        title="Sign Out"
-      />
-    </ScrollView>
-    // </View>
+      </ScrollView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover", // or "stretch"
+  },
+  cycleCard: {
+    margin: 10,
+    width: "99%",
+    marginBottom: 20,
+    marginTop: 20,
+    padding: 10,
+  },
+  card: {
+    margin: 10,
+  },
+
+  editButtons: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+  },
   container: {
     justifyContent: "center",
     alignItems: "center",
     marginTop: 50,
   },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "black",
-    marginBottom: 20,
+
+  inlineText: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingLeft: 60,
+    paddingRight: 80,
+    marginTop: -30,
   },
-  buttonContainer: {
-    width: "80%",
-    marginVertical: 20,
+
+  ovulationDateInput: {
+    width: "90%",
+    borderColor: "#bbb",
+    padding: 12,
+    borderRadius: 5,
+    marginBottom: 15,
+    backgroundColor: "#fff",
+    marginTop: 20,
+  },
+
+  inlineInputContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 5,
+    width: "100%",
+    paddingLeft: 20,
+    paddingRight: 20,
+    // marginTop: 10,
+  },
+  datePciker: {
+    marginTop: 10,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginTop: 70,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 3,
+    width: "100%",
+    paddingLeft: 12,
+    paddingRight: 12,
+  },
+  button: {
+    backgroundColor: "black",
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  predictionCard: {
+    margin: 10,
+  },
+  predictionText: {
+    marginBottom: 8,
   },
 });
