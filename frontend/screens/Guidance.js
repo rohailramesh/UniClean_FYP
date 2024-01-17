@@ -139,10 +139,19 @@ export default function Guidance({ session }) {
           <Text style={styles.sectionHeader}>Hygiene Products</Text>
           <Card>
             <Card.Content>
-              <Text>
-                Your next period is expected to start in {daysDifference} day(s)
-                ({predictedStartDate}).
-              </Text>
+              {predictedResults && predictedResults.length ? (
+                <Text>
+                  Your next period is expected to start in {daysDifference}{" "}
+                  day(s) ({predictedStartDate}).
+                  {"\n"}
+                </Text>
+              ) : (
+                <Text>
+                  No data found to make predictions.
+                  {"\n"}
+                </Text>
+              )}
+
               <Text>
                 You will receive two scheduled reminders the day before your
                 period starts to collect personal hygiene products from your
@@ -158,20 +167,47 @@ export default function Guidance({ session }) {
         <View style={styles.lutealPhaseGuidance}>
           <Text style={styles.sectionHeader}>Luteal Phase</Text>
           <Card>
-            <Card.Title
-              title={
-                "Your luteal phase length" +
-                predictedLutealPhaseLength +
-                " days"
-              }
-              titleStyle={{ fontWeight: "bold" }}
-            />
+            <Card.Content>
+              <Text>
+                A safe luteal phase length is considered as 11 days or more
+                {"\n"}
+                {"\n"}
+                {predictedResults && predictedResults.length ? (
+                  predictedLutealPhaseLength < 11 ? (
+                    <>
+                      <Text>
+                        Your luteal phase length for the upcoming cycle will be{" "}
+                        {predictedLutealPhaseLength} days. {"\n"}
+                      </Text>
+                      <Text style={styles.moreDetailsText}>
+                        {"\n"}
+                        You require medical attention. Please consult your GP or
+                        access UniChat to get the right help.
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text>
+                        Your luteal phase length for the upcoming cycle will be{" "}
+                        {predictedLutealPhaseLength} days. {"\n"}
+                      </Text>
+                      <Text style={styles.moreDetailsText}>
+                        {"\n"}
+                        You require no immediate medical attention right now.
+                      </Text>
+                    </>
+                  )
+                ) : (
+                  <Text>No data found to make predictions. {"\n"}</Text>
+                )}
+              </Text>
+            </Card.Content>
           </Card>
           <View style={styles.extraInfoCard}>
             <Card>
               <Card.Content>
                 <Text style={styles.moreDetailsText}>
-                  Want to learn about your cycles? Ask UniChat.
+                  Want to learn about your luteal phase? Ask UniChat.
                 </Text>
               </Card.Content>
             </Card>
@@ -240,6 +276,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   productInfoText: {
+    marginTop: 10,
     fontStyle: "italic",
     textAlign: "center",
     fontWeight: "bold",
