@@ -33,16 +33,25 @@ export default function Guidance({ session }) {
         if (error) {
           console.error("Error fetching predicted data:", error.message);
         } else {
-          const prediction = data; // Assuming there is only one prediction
-          setPredictedResults(prediction);
-          setPredictedStartDate(formatDate(prediction[0].predicted_start_date));
-          setPredictedEndDate(formatDate(prediction[0].predicted_end_date));
-          setPredictedCycleLength(prediction[0].predicted_cycle_length);
-          setPredictedLutealPhaseLength(prediction[0].predicted_luteal_length);
-          setPredictedOvulationDate(
-            formatDate(prediction[0].predicted_ovulation_date)
-          );
-          setPredictedOvulationDay(prediction[0].predicted_ovulation_day);
+          if (data && data.length > 0) {
+            const prediction = data; // Assuming there is only one prediction
+            setPredictedResults(prediction);
+            setPredictedStartDate(
+              formatDate(prediction[0].predicted_start_date)
+            );
+            setPredictedEndDate(formatDate(prediction[0].predicted_end_date));
+            setPredictedCycleLength(prediction[0].predicted_cycle_length);
+            setPredictedLutealPhaseLength(
+              prediction[0].predicted_luteal_length
+            );
+            setPredictedOvulationDate(
+              formatDate(prediction[0].predicted_ovulation_date)
+            );
+            setPredictedOvulationDay(prediction[0].predicted_ovulation_day);
+          } else {
+            setPredictedResults(null);
+            console.log("No predicted data found");
+          }
         }
       } catch (error) {
         console.error("Error fetching predicted data:", error.message);
@@ -71,7 +80,7 @@ export default function Guidance({ session }) {
           />
         </View>
         <View>
-          {predictedResults && (
+          {predictedResults && predictedResults.length > 0 ? (
             <View style={styles.predictions}>
               <Card style={styles.predictionCard}>
                 <Card.Title
@@ -98,13 +107,30 @@ export default function Guidance({ session }) {
                 </Card.Content>
               </Card>
             </View>
+          ) : (
+            <View style={styles.predictions}>
+              <Card style={styles.predictionCard}>
+                <Card.Content>
+                  <Text>No predictions available</Text>
+                </Card.Content>
+              </Card>
+            </View>
           )}
         </View>
+
         <View style={styles.productGuidance}>
-          <Text>Hygiene Products</Text>
+          <Text style={styles.sectionHeader}>Hygiene Products</Text>
+          <Card>
+            <Card.Title></Card.Title>
+            <Card.Content></Card.Content>
+          </Card>
         </View>
         <View style={styles.lutealPhaseGuidance}>
-          <Text>Luteal Phase</Text>
+          <Text style={styles.sectionHeader}>Luteal Phase</Text>
+          <Card>
+            <Card.Title></Card.Title>
+            <Card.Content></Card.Content>
+          </Card>
         </View>
       </ScrollView>
     </ImageBackground>
@@ -137,11 +163,24 @@ const styles = StyleSheet.create({
   predictionText: {
     marginBottom: 8,
   },
+  sectionHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+  },
   productGuidance: {
-    // Your styles for product guidance
+    width: "100%",
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginBottom: 20,
   },
   lutealPhaseGuidance: {
-    // Your styles for luteal phase guidance
+    width: "100%",
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   tableContainer: {
     margin: 20,
