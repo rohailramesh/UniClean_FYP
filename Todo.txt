@@ -37,3 +37,6 @@ Profile Screen:
 -̶ A̶l̶l̶o̶w̶ u̶s̶e̶r̶s̶ t̶o̶ c̶h̶a̶n̶g̶e̶ p̶a̶s̶s̶w̶o̶r̶d̶s̶ a̶n̶d̶ u̶p̶d̶a̶t̶e̶ u̶s̶e̶r̶n̶a̶m̶e̶s̶.̶
 - Implement the addition of a secondary university email with verification.
 - Provide an option for users to request account deletion and associated data.
+
+
+- Got a question? Ask UniChat

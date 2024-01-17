@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Products from "./screens/Products";
 import Guidance from "./screens/Guidance";
 import Profile from "./screens/Profile";
+import Botpress from "./components/botpress";
 
 const Tab = createBottomTabNavigator();
 
@@ -62,6 +63,24 @@ export default function App() {
                 />
               ),
               tabBarLabel: "UniCare",
+              headerShown: false,
+            }}
+          ></Tab.Screen>
+          <Tab.Screen
+            name="UniChat"
+            children={() => <Botpress session={session} />}
+            options={{
+              tabBarIcon: ({ focused }) => (
+                <Image
+                  source={require("./assets/icons/live-chat.png")}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    tintColor: focused ? "#007AFF" : "#8E8E93",
+                  }}
+                />
+              ),
+              tabBarLabel: "UniChat",
               headerShown: false,
             }}
           ></Tab.Screen>
