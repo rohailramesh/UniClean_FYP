@@ -43,7 +43,7 @@ export default function App() {
                   }}
                 />
               ),
-              tabBarLabel: "Tracker",
+              tabBarLabel: "UniTracker",
               headerShown: false,
             }}
           ></Tab.Screen>
@@ -79,7 +79,7 @@ export default function App() {
                   }}
                 />
               ),
-              tabBarLabel: "Hygiene Products",
+              tabBarLabel: "UniProducts",
               headerShown: false,
             }}
           ></Tab.Screen>
@@ -98,7 +98,7 @@ export default function App() {
                   }}
                 />
               ),
-              tabBarLabel: "Profile",
+              tabBarLabel: "UniProfile",
               headerShown: false,
             }}
           ></Tab.Screen>

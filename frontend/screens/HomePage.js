@@ -23,6 +23,7 @@ export default function HomePage({ session }) {
   const [ovulationDay, setOvulationDay] = useState("");
   const [predictedResults, setPredictedResults] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
+  const userFullName = user?.user_metadata.fullname;
 
   const handleAddDataPoint = () => {
     if (startDate && endDate && ovulationDay) {
@@ -355,6 +356,12 @@ export default function HomePage({ session }) {
               color={"white"}
               buttonStyle={[styles.button]}
             />
+            <Button
+              title="Predict"
+              onPress={handlePredictionRequest}
+              color={"white"}
+              buttonStyle={[styles.button]}
+            />
           </View>
           <View style={styles.cycleCard}>
             {dataPoints.map((item, index) => (
@@ -380,36 +387,39 @@ export default function HomePage({ session }) {
             ))}
           </View>
 
-          <Button
-            title="Predict"
-            onPress={handlePredictionRequest}
-            color={"white"}
-            buttonStyle={[styles.button]}
-          />
           {/* Display predicted results */}
           {predictedResults && (
-            <View>
+            <View style={styles.predictions}>
               <Card style={styles.predictionCard}>
+                <Card.Title
+                  title={userFullName + "'s upcoming cycle"}
+                  titleStyle={{ fontSize: 20, fontWeight: "bold" }}
+                />
                 <Card.Content>
                   <Text style={styles.predictionText}>
-                    Cycle Length: {predictedResults.predictedCycleLength}
+                    Start Date: {predictedResults.predictedStartDate}
+                  </Text>
+                  <Text style={styles.predictionText}>
+                    End Date: {predictedResults.predictedEndDate}
+                  </Text>
+                  <Text style={styles.predictionText}>
+                    Cycle Length: {predictedResults.predictedCycleLength} days
                   </Text>
                   <Text style={styles.predictionText}>
                     Luteal Phase Length:{" "}
-                    {predictedResults.predictedLutealPhaseLength}
+                    {predictedResults.predictedLutealPhaseLength} days
                   </Text>
+
                   <Text style={styles.predictionText}>
-                    Ovulation Day: {predictedResults.predictedOvulationDay}
+                    Ovulation Date: {predictedResults.predictedOvulationDate}{" "}
+                    (Day: {predictedResults.predictedOvulationDay})
                   </Text>
-                  <Text style={styles.predictionText}>
-                    Cycle/Period Start Date:{" "}
-                    {predictedResults.predictedStartDate}
-                  </Text>
-                  <Text style={styles.predictionText}>
-                    Cycle End Date: {predictedResults.predictedEndDate}
-                  </Text>
-                  <Text style={styles.predictionText}>
-                    Ovulation Date: {predictedResults.predictedOvulationDate}
+                </Card.Content>
+              </Card>
+              <Card style={[styles.predictionCard, styles.extraInfoCard]}>
+                <Card.Content>
+                  <Text style={styles.moreDetailsText}>
+                    Access UniCare screen for more details.
                   </Text>
                 </Card.Content>
               </Card>
@@ -429,8 +439,9 @@ const styles = StyleSheet.create({
   cycleCard: {
     margin: 10,
     width: "99%",
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: 30,
+    gap: -15,
+    marginTop: 10,
     padding: 10,
   },
   card: {
@@ -507,10 +518,22 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
   },
+  predictions: {
+    width: "95%",
+    marginTop: -55,
+  },
   predictionCard: {
     margin: 10,
   },
   predictionText: {
     marginBottom: 8,
+  },
+  moreDetailsText: {
+    fontStyle: "italic",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  extraInfoCard: {
+    marginTop: 0,
   },
 });
