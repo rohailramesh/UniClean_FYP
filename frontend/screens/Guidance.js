@@ -9,7 +9,7 @@ import {
 import { Card } from "react-native-paper";
 import { supabase } from "../lib/supabase";
 import { IconButton } from "react-native-paper";
-import Botpress from "../components/botpress";
+import axios from "axios";
 
 export default function Guidance({ session }) {
   const user = session?.user;
@@ -22,7 +22,58 @@ export default function Guidance({ session }) {
   const [predictedOvulationDate, setPredictedOvulationDate] = useState(null);
   const [predictedOvulationDay, setPredictedOvulationDay] = useState(null);
   const [daysDifference, setDaysDifference] = useState(null);
+  const [periodStartDate, setPeriodStartDate] = useState(null);
   const userFullName = user?.user_metadata.fullname;
+
+  const sendNotification = async () => {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    console.log("Current date:", currentDate);
+
+    // Check if periodStartDate is not null
+    if (periodStartDate) {
+      console.log("Period start date:", periodStartDate);
+      const notificationDate = new Date(periodStartDate);
+      notificationDate.setDate(notificationDate.getDate() - 1); // Subtract 1 day
+      notificationDate.setHours(0, 0, 0, 0);
+      console.log("Notification date:", notificationDate);
+      // Check if today is one day before the predicted start date
+      if (currentDate.getTime() === notificationDate.getTime()) {
+        // Prepare the post body for NativeNotify API
+        const notificationBody = {
+          appId: 17728,
+          appToken: "TG4wD6XhTpNs69DfbtVLbo",
+          title: "Upcoming Period",
+          body: `Your period is expected to start tomorrow (${predictedStartDate}). Don't forget to prepare!`,
+          dateSent: new Date().toLocaleString(),
+          // You can add pushData or bigPictureURL if needed
+        };
+
+        // Send a POST request to the NativeNotify API
+        try {
+          const response = await axios.post(
+            "https://app.nativenotify.com/api/notification",
+            notificationBody
+          );
+
+          // Check the response and handle accordingly
+          if (response.status === 201) {
+            console.log(
+              "Notification sent successfully. Status:",
+              response.status
+            );
+          } else {
+            console.error(
+              "Failed to send notification. Unexpected Status:",
+              response.status
+            );
+          }
+        } catch (error) {
+          console.error("Error sending notification:", error);
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     // Fetch predicted results from the database and set them to the state
@@ -52,21 +103,22 @@ export default function Guidance({ session }) {
             setPredictedOvulationDay(prediction[0].predicted_ovulation_day);
             const today = new Date(); // Create a new Date object
             today.setHours(0, 0, 0, 0);
-            console.log("Today's date:", today);
+            // console.log("Today's date:", today);
             const predictedStartDate = new Date(
               prediction[0].predicted_start_date
             );
             predictedStartDate.setHours(0, 0, 0, 0);
-            console.log("Predicted start date:", predictedStartDate);
+            // console.log("Predicted date:", predictedStartDate);
+            setPeriodStartDate(predictedStartDate);
             const differenceInTime =
               predictedStartDate.getTime() - today.getTime();
-            console.log("Difference in time:", differenceInTime);
+            // console.log("Difference in time:", differenceInTime);
             const differenceInDays = differenceInTime / (1000 * 3600 * 24);
-            console.log("Difference in days:", differenceInDays);
+            // console.log("Difference in days:", differenceInDays);
             setDaysDifference(differenceInDays);
           } else {
             setPredictedResults(null);
-            console.log("No predicted data found");
+            // console.log("No predicted data found");
           }
         }
       } catch (error) {
@@ -79,7 +131,8 @@ export default function Guidance({ session }) {
     };
 
     fetchPredictedData();
-  }, []); // Run the effect only once on component mount
+    sendNotification();
+  }, [predictedStartDate]); // Run the effect only once on component mount
 
   return (
     <ImageBackground

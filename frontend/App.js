@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import registerNNPushToken from "native-notify";
 import Auth from "./screens/Auth";
 import HomePage from "./screens/HomePage";
 import { supabase } from "./lib/supabase";
@@ -13,6 +14,7 @@ import Botpress from "./components/botpress";
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  registerNNPushToken(17728, "TG4wD6XhTpNs69DfbtVLbo");
   const [session, setSession] = useState(null);
 
   useEffect(() => {
