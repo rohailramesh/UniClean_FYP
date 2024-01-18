@@ -140,11 +140,19 @@ export default function Guidance({ session }) {
           <Card>
             <Card.Content>
               {predictedResults && predictedResults.length ? (
-                <Text>
-                  Your next period is expected to start in {daysDifference}{" "}
-                  day(s) ({predictedStartDate}).
-                  {"\n"}
-                </Text>
+                daysDifference <= 0 ? (
+                  <Text>
+                    Your period has already started.{"\n"}
+                    {/* {"\n"} */}
+                  </Text>
+                ) : (
+                  <Text>
+                    Your next period is expected to start in {daysDifference}{" "}
+                    day(s) ({predictedStartDate}).
+                    {"\n"}
+                    {"\n"}
+                  </Text>
+                )
               ) : (
                 <Text>
                   No data found to make predictions.
