@@ -10,6 +10,7 @@ import { Card } from "react-native-paper";
 import { supabase } from "../lib/supabase";
 import { IconButton } from "react-native-paper";
 import axios from "axios";
+import { APP_ID, APP_TOKEN } from "@env";
 
 export default function Guidance({ session }) {
   const user = session?.user;
@@ -27,7 +28,7 @@ export default function Guidance({ session }) {
 
   const sendNotification = async () => {
     const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
+    // currentDate.setHours(0, 0, 0, 0);
     console.log("Current date:", currentDate);
 
     // Check if periodStartDate is not null
@@ -35,42 +36,48 @@ export default function Guidance({ session }) {
       console.log("Period start date:", periodStartDate);
       const notificationDate = new Date(periodStartDate);
       notificationDate.setDate(notificationDate.getDate() - 1); // Subtract 1 day
-      notificationDate.setHours(0, 0, 0, 0);
+      notificationDate.setHours(14, 31, 0, 0);
       console.log("Notification date:", notificationDate);
       // Check if today is one day before the predicted start date
-      if (currentDate.getTime() === notificationDate.getTime()) {
+
+      // Calculate the time difference in milliseconds
+      const timeDifference = notificationDate.getTime() - currentDate.getTime();
+      console.log("Time difference:", timeDifference);
+      if (timeDifference > 0) {
         // Prepare the post body for NativeNotify API
-        const notificationBody = {
-          appId: 17728,
-          appToken: "TG4wD6XhTpNs69DfbtVLbo",
-          title: "Upcoming Period",
-          body: `Your period is expected to start tomorrow (${predictedStartDate}). Don't forget to prepare!`,
-          dateSent: new Date().toLocaleString(),
-          // You can add pushData or bigPictureURL if needed
-        };
+        setTimeout(async () => {
+          const notificationBody = {
+            appId: 17728,
+            appToken: "TG4wD6XhTpNs69DfbtVLbo",
+            title: "Upcoming Period",
+            body: `Your period is expected to start tomorrow (${predictedStartDate}). Collect your free hygiene products from your nearest pickup location`,
+            dateSent: new Date().toLocaleString(),
+            // You can add pushData or bigPictureURL if needed
+          };
 
-        // Send a POST request to the NativeNotify API
-        try {
-          const response = await axios.post(
-            "https://app.nativenotify.com/api/notification",
-            notificationBody
-          );
+          // Send a POST request to the NativeNotify API
+          try {
+            const response = await axios.post(
+              "https://app.nativenotify.com/api/notification",
+              notificationBody
+            );
 
-          // Check the response and handle accordingly
-          if (response.status === 201) {
-            console.log(
-              "Notification sent successfully. Status:",
-              response.status
-            );
-          } else {
-            console.error(
-              "Failed to send notification. Unexpected Status:",
-              response.status
-            );
+            // Check the response and handle accordingly
+            if (response.status === 201) {
+              console.log(
+                "Notification sent successfully. Status:",
+                response.status
+              );
+            } else {
+              console.error(
+                "Failed to send notification. Unexpected Status:",
+                response.status
+              );
+            }
+          } catch (error) {
+            console.error("Error sending notification:", error);
           }
-        } catch (error) {
-          console.error("Error sending notification:", error);
-        }
+        }, timeDifference);
       }
     }
   };
