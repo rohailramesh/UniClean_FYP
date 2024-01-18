@@ -6,6 +6,7 @@ import {
   Dimensions,
   Text,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { LocationMarkers } from "../assets/ProductLocations";
 import * as Location from "expo-location";
@@ -168,9 +169,10 @@ export default function Products({ session }) {
                   }}
                   title={`${
                     closestMarker.title
-                  } - ${closestMarker.distance.toFixed(4)} km away`}
-                  description={`${closestMarker.distance.toFixed(4)} km away`}
-                  pinColor="red"
+                  }  ${closestMarker.distance.toFixed(4)} km away`}
+                  description={`Where to find them:\n${closestMarker.directions}\nProducts availability: Yes`}
+                  pinColor="red" // Use the default red pin color
+                  zIndex={0}
                 />
               </>
             )}
@@ -196,11 +198,9 @@ export default function Products({ session }) {
                   }}
                   title={`${
                     secondClosestMarker.title
-                  } - ${secondClosestMarker.distance.toFixed(4)} km away`}
-                  description={`${secondClosestMarker.distance.toFixed(
-                    4
-                  )} km away`}
-                  pinColor="blue"
+                  }  ${secondClosestMarker.distance.toFixed(4)} km away`}
+                  description={`Where to find them:\n${secondClosestMarker.directions}\nProducts availability: Yes`}
+                  // pinColor="green"
                 />
               </>
             )}
