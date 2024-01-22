@@ -14,6 +14,7 @@ import { DatePickerInput } from "react-native-paper-dates";
 import { IconButton, Card } from "react-native-paper";
 import { supabase } from "../lib/supabase";
 import { Button } from "react-native-elements";
+import AnimatedLoader from "react-native-animated-loader";
 
 export default function HomePage({ session }) {
   const user = session?.user;
@@ -24,6 +25,17 @@ export default function HomePage({ session }) {
   const [predictedResults, setPredictedResults] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
   const userFullName = user?.user_metadata.fullname;
+  const [loading, setLoading] = useState(false);
+  const [animationFinished, setAnimationFinished] = useState(false);
+  const [predictionCardVisible, setPredictionCardVisible] = useState(true);
+
+  const showLoader = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setAnimationFinished(true);
+    }, 3000); // Hides the loader after 5 seconds
+  };
 
   const handleAddDataPoint = () => {
     if (startDate && endDate && ovulationDay) {
@@ -149,6 +161,7 @@ export default function HomePage({ session }) {
 
   const handlePredictionRequest = async () => {
     try {
+      showLoader();
       // Fetch cycle data for the current user from the database
       const { data: cycleData, error: cycleDataError } = await supabase
         .from("cycle_data")
@@ -183,7 +196,7 @@ export default function HomePage({ session }) {
       // console.log("Fetched cycleData:\n", formattedCycleData);
 
       // Send fetched cycle data for predictions
-      const serverUrl = "http://192.168.1.123:8000/api/predict";
+      const serverUrl = "http://10.47.34.224:8000/api/predict";
 
       const response = await fetch(serverUrl, {
         method: "POST",
@@ -229,6 +242,9 @@ export default function HomePage({ session }) {
           predictedOvulationDate: predictedOvulationDate.toLocaleDateString(),
           predictedLutealPhaseLength: predictedLutealPhaseLength,
         });
+        setTimeout(() => {
+          setPredictionCardVisible(true);
+        }, 3000); // Adjust the delay accordingly
 
         // Prevent duplicated data from being added to prediction_data table in the database
         const { data: existingPredictionData } = await supabase
@@ -288,7 +304,7 @@ export default function HomePage({ session }) {
             return;
           }
 
-          alert("Prediction data updated successfully!");
+          // alert("Prediction data updated successfully!");
         }
       } else {
         console.error("No data");
@@ -305,6 +321,16 @@ export default function HomePage({ session }) {
       style={styles.backgroundImage}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        {loading && (
+          <AnimatedLoader
+            visible={loading}
+            overlayColor="rgba(255,255,255,0.5)"
+            animationStyle={styles.lottie}
+            speed={1}
+          >
+            <Text>Fetching upcoming cycle!</Text>
+          </AnimatedLoader>
+        )}
         <View style={styles.headerContainer}>
           <Text>UniClean</Text>
           <Text>Welcome, {user?.user_metadata.username}</Text>
@@ -388,7 +414,7 @@ export default function HomePage({ session }) {
           </View>
 
           {/* Display predicted results */}
-          {predictedResults && (
+          {animationFinished && predictedResults && predictionCardVisible && (
             <View style={styles.predictions}>
               <Card style={styles.predictionCard}>
                 <Card.Title
@@ -409,11 +435,15 @@ export default function HomePage({ session }) {
                     Luteal Phase Length:{" "}
                     {predictedResults.predictedLutealPhaseLength} days
                   </Text>
-
                   <Text style={styles.predictionText}>
                     Ovulation Date: {predictedResults.predictedOvulationDate}{" "}
                     (Day: {predictedResults.predictedOvulationDay})
                   </Text>
+                  <Button
+                    title="Hide Prediction"
+                    onPress={() => setPredictionCardVisible(false)}
+                    buttonStyle={[styles.button]}
+                  />
                 </Card.Content>
               </Card>
               <Card style={[styles.predictionCard, styles.extraInfoCard]}>
@@ -435,6 +465,10 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     resizeMode: "cover", // or "stretch"
+  },
+  lottie: {
+    width: 100,
+    height: 100,
   },
   cycleCard: {
     margin: 10,

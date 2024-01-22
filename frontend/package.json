@@ -25,6 +25,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.6",
+    "react-native-animated-loader": "^1.0.0",
     "react-native-config": "^1.5.1",
     "react-native-dotenv": "^3.4.9",
     "react-native-elements": "^3.4.3",
@@ -40,5 +41,5 @@
     "@babel/core": "^7.20.0"
   },
   "private": true,
-  "proxy": "http://192.168.1.123:8000"
+  "proxy": "http://10.47.34.224:8000"
 }

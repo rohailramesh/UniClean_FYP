@@ -15,6 +15,7 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   registerNNPushToken(17728, "TG4wD6XhTpNs69DfbtVLbo");
+
   const [session, setSession] = useState(null);
 
   useEffect(() => {
