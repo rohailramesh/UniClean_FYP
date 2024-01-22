@@ -14,6 +14,8 @@ import { DatePickerInput } from "react-native-paper-dates";
 import { IconButton, Card } from "react-native-paper";
 import { supabase } from "../lib/supabase";
 import { Button } from "react-native-elements";
+import LottieView from "lottie-react-native";
+import HomePageAnimation from "../utils/HomePageAnimation.json";
 import AnimatedLoader from "react-native-animated-loader";
 
 export default function HomePage({ session }) {
@@ -28,13 +30,14 @@ export default function HomePage({ session }) {
   const [loading, setLoading] = useState(false);
   const [animationFinished, setAnimationFinished] = useState(false);
   const [predictionCardVisible, setPredictionCardVisible] = useState(true);
+  const [secondAnimationVisible, setSecondAnimationVisible] = useState(false);
 
   const showLoader = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       setAnimationFinished(true);
-    }, 3000); // Hides the loader after 5 seconds
+    }, 5000); // Hides the loader after 5 seconds
   };
 
   const handleAddDataPoint = () => {
@@ -244,7 +247,7 @@ export default function HomePage({ session }) {
         });
         setTimeout(() => {
           setPredictionCardVisible(true);
-        }, 3000); // Adjust the delay accordingly
+        }, 5000); // Adjust the delay accordingly
 
         // Prevent duplicated data from being added to prediction_data table in the database
         const { data: existingPredictionData } = await supabase
@@ -325,6 +328,7 @@ export default function HomePage({ session }) {
           <AnimatedLoader
             visible={loading}
             overlayColor="rgba(255,255,255,0.5)"
+            source={require("../utils/PredictingAnimation.json")}
             animationStyle={styles.lottie}
             speed={1}
           >
@@ -338,6 +342,14 @@ export default function HomePage({ session }) {
             icon="location-exit"
             iconColor="black"
             onPress={() => supabase.auth.signOut()}
+          />
+        </View>
+        <View style={styles.HomePageAnimation}>
+          <LottieView
+            source={HomePageAnimation} // Replace with your animation source
+            autoPlay
+            loop
+            style={styles.HomePageAnimation}
           />
         </View>
         <View style={styles.container}>
@@ -389,6 +401,7 @@ export default function HomePage({ session }) {
               buttonStyle={[styles.button]}
             />
           </View>
+
           <View style={styles.cycleCard}>
             {dataPoints.map((item, index) => (
               <Card key={index} style={styles.card}>
@@ -422,12 +435,14 @@ export default function HomePage({ session }) {
                   titleStyle={{ fontSize: 20, fontWeight: "bold" }}
                 />
                 <Card.Content>
-                  <Text style={styles.predictionText}>
-                    Start Date: {predictedResults.predictedStartDate}
-                  </Text>
-                  <Text style={styles.predictionText}>
-                    End Date: {predictedResults.predictedEndDate}
-                  </Text>
+                  <View style={styles.inlinePredictionText}>
+                    <Text style={styles.predictionText}>
+                      Start Date: {predictedResults.predictedStartDate}
+                    </Text>
+                    <Text style={styles.predictionText}>
+                      End Date: {predictedResults.predictedEndDate}
+                    </Text>
+                  </View>
                   <Text style={styles.predictionText}>
                     Cycle Length: {predictedResults.predictedCycleLength} days
                   </Text>
@@ -467,8 +482,15 @@ const styles = StyleSheet.create({
     resizeMode: "cover", // or "stretch"
   },
   lottie: {
-    width: 100,
-    height: 100,
+    width: 300,
+    height: 300,
+    marginTop: 190,
+  },
+  HomePageAnimation: {
+    width: 300,
+    height: 300,
+    marginTop: -10,
+    marginLeft: 20,
   },
   cycleCard: {
     margin: 10,
@@ -489,7 +511,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 50,
+    marginTop: 30,
   },
 
   inlineText: {
@@ -499,6 +521,12 @@ const styles = StyleSheet.create({
     paddingLeft: 60,
     paddingRight: 80,
     marginTop: -30,
+  },
+
+  inlinePredictionText: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
 
   ovulationDateInput: {
