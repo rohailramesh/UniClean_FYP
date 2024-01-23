@@ -3,9 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  // Button,
   Alert,
-  FlatList,
   StyleSheet,
   ScrollView,
   ImageBackground,
@@ -30,7 +28,8 @@ export default function HomePage({ session }) {
   const [loading, setLoading] = useState(false);
   const [animationFinished, setAnimationFinished] = useState(false);
   const [predictionCardVisible, setPredictionCardVisible] = useState(true);
-  const [secondAnimationVisible, setSecondAnimationVisible] = useState(false);
+  const [showButton, setShowButton] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
 
   const showLoader = () => {
     setLoading(true);
@@ -352,6 +351,37 @@ export default function HomePage({ session }) {
             style={styles.HomePageAnimation}
           />
         </View>
+        <View style={styles.tourContainer}>
+          {showButton && (
+            <Button
+              title="How this works?"
+              titleStyle={{ color: "black" }}
+              onPress={() => {
+                // Your existing button logic here
+
+                // Show alert and hide the button only the first time
+                if (showButton) {
+                  // alert("Welcome", "Look around");
+                  Alert.alert(
+                    "Entering your data",
+                    "Enter your last 10 cycles to get started.",
+                    [
+                      {
+                        text: "Close",
+                        onPress: () => console.log("Ask me later pressed"),
+                      },
+                    ]
+                  );
+                  setShowAlert(true);
+                  setShowButton(false);
+                }
+              }}
+              buttonStyle={[styles.tourButton]}
+              // Add the disabled prop to conditionally disable the button
+              disabled={!showButton}
+            />
+          )}
+        </View>
         <View style={styles.container}>
           <View style={styles.inlineText}>
             <Text>Cycle Start Date</Text>
@@ -364,6 +394,7 @@ export default function HomePage({ session }) {
               displayFormat="YYYY-MM-DD"
               onChange={(value) => setStartDate(value)}
               style={styles.datePciker}
+              iconStyle={{ color: "pink" }}
             />
             <DatePickerInput
               value={endDate}
@@ -443,6 +474,7 @@ export default function HomePage({ session }) {
                       End Date: {predictedResults.predictedEndDate}
                     </Text>
                   </View>
+
                   <Text style={styles.predictionText}>
                     Cycle Length: {predictedResults.predictedCycleLength} days
                   </Text>
@@ -514,6 +546,21 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
 
+  tourContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: -50,
+    marginBottom: 10,
+  },
+  tourButton: {
+    backgroundColor: "clear",
+    marginLeft: 10,
+    marginRight: 10,
+    borderWidth: 2,
+    borderColor: "black",
+    borderRadius: 10,
+  },
+
   inlineText: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -535,7 +582,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 5,
     marginBottom: 15,
-    backgroundColor: "#fff",
+    backgroundColor: "#E7E0EC",
     marginTop: 20,
   },
 
