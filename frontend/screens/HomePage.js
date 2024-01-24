@@ -16,7 +16,7 @@ import LottieView from "lottie-react-native";
 import HomePageAnimation from "../utils/HomePageAnimation.json";
 import AnimatedLoader from "react-native-animated-loader";
 
-export default function HomePage({ session }) {
+export default function HomePage({ session, updatePrediction }) {
   const user = session?.user;
   const [dataPoints, setDataPoints] = useState([]);
   const [startDate, setStartDate] = useState("");
@@ -198,7 +198,7 @@ export default function HomePage({ session }) {
       // console.log("Fetched cycleData:\n", formattedCycleData);
 
       // Send fetched cycle data for predictions
-      const serverUrl = "http://10.47.34.224:8000/api/predict";
+      const serverUrl = "http://10.47.35.14:8000/api/predict";
 
       const response = await fetch(serverUrl, {
         method: "POST",
@@ -235,6 +235,15 @@ export default function HomePage({ session }) {
             "Your predicted luteal phase length is less than 11 days. Please consult your doctor."
           );
         }
+
+        updatePrediction({
+          predictedCycleLength: responseData.predictedCycleLength,
+          predictedOvulationDay: responseData.predictedOvulationDay,
+          predictedStartDate: predictedStartDate.toLocaleDateString(),
+          predictedEndDate: predictedEndDate.toLocaleDateString(),
+          predictedOvulationDate: predictedOvulationDate.toLocaleDateString(),
+          predictedLutealPhaseLength: predictedLutealPhaseLength,
+        });
 
         setPredictedResults({
           predictedCycleLength: responseData.predictedCycleLength,
@@ -354,7 +363,7 @@ export default function HomePage({ session }) {
         <View style={styles.tourContainer}>
           {showButton && (
             <Button
-              title="How this works?"
+              title="Getting Started"
               titleStyle={{ color: "black" }}
               onPress={() => {
                 // Your existing button logic here
@@ -363,8 +372,8 @@ export default function HomePage({ session }) {
                 if (showButton) {
                   // alert("Welcome", "Look around");
                   Alert.alert(
-                    "Entering your data",
-                    "Enter your last 10 cycles to get started.",
+                    "Getting Started",
+                    "If this is your first time using UniClean, please enter your last 10 cycles to get started. \n \n  If you have already entered your data, you can skip this step. \n \n Do make sure to enter your data for the most recent cycle to get accurate predictions. \n \n  An estimate for ovulation day can be added if not known exactly. \n \n Finally, please make sure to click on 'Save Cycle' to save your data after you add it! \n \n Thankyou for using UniClean!",
                     [
                       {
                         text: "Close",

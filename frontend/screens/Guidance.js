@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   ScrollView,
   ImageBackground,
+  Button,
 } from "react-native";
 import { Card } from "react-native-paper";
 import { supabase } from "../lib/supabase";
 import { IconButton } from "react-native-paper";
 import axios from "axios";
-import { APP_ID, APP_TOKEN } from "@env";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function Guidance({ session }) {
   const user = session?.user;
@@ -24,7 +26,38 @@ export default function Guidance({ session }) {
   const [predictedOvulationDay, setPredictedOvulationDay] = useState(null);
   const [daysDifference, setDaysDifference] = useState(null);
   const [periodStartDate, setPeriodStartDate] = useState(null);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [notificationTimeHour, setNotificationTimeHour] = useState(null);
+  const [notificationTimeMinute, setNotificationTimeMinute] = useState(null);
   const userFullName = user?.user_metadata.fullname;
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  useEffect(() => {
+    if (notificationTimeHour !== null && notificationTimeMinute !== null) {
+      // Both hour and minute are set, proceed with sending notification
+      sendNotification();
+    }
+  }, [notificationTimeHour, notificationTimeMinute]);
+
+  const handleConfirm = (time) => {
+    // console.log("Time:", time);
+    // console.log("Hours:", time.getHours());
+    // console.log("Minutes:", time.getMinutes());
+
+    // Set the notification time immediately
+    setNotificationTimeHour(time.getHours());
+    setNotificationTimeMinute(time.getMinutes());
+
+    // Hide the date picker
+    hideDatePicker();
+  };
 
   const sendNotification = async () => {
     const currentDate = new Date();
@@ -33,12 +66,12 @@ export default function Guidance({ session }) {
 
     // Check if periodStartDate is not null
     if (periodStartDate) {
-      console.log("Period start date:", periodStartDate);
       const notificationDate = new Date(periodStartDate);
-      notificationDate.setDate(notificationDate.getDate() - 1); // Subtract 1 day
-      notificationDate.setHours(14, 31, 0, 0);
+      notificationDate.setDate(notificationDate.getDate() - 1);
+      console.log("Notification time hour:", notificationTimeHour);
+      console.log("Notification time minute:", notificationTimeMinute);
+      notificationDate.setHours(notificationTimeHour, notificationTimeMinute);
       console.log("Notification date:", notificationDate);
-      // Check if today is one day before the predicted start date
 
       // Calculate the time difference in milliseconds
       const timeDifference = notificationDate.getTime() - currentDate.getTime();
@@ -82,63 +115,61 @@ export default function Guidance({ session }) {
     }
   };
 
+  const formatDate = (dateString) => {
+    const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  async function fetchPredictedData() {
+    try {
+      const { data, error } = await supabase
+        .from("prediction_data")
+        .select("*")
+        .eq("user_id", user.id);
+      if (error) {
+        console.error("Error fetching predicted data:", error.message);
+      } else {
+        if (data && data.length > 0) {
+          const prediction = data; // Assuming there is only one prediction
+          setPredictedResults(prediction);
+          setPredictedStartDate(formatDate(prediction[0].predicted_start_date));
+          setPredictedEndDate(formatDate(prediction[0].predicted_end_date));
+          setPredictedCycleLength(prediction[0].predicted_cycle_length);
+          setPredictedLutealPhaseLength(prediction[0].predicted_luteal_length);
+          setPredictedOvulationDate(
+            formatDate(prediction[0].predicted_ovulation_date)
+          );
+          setPredictedOvulationDay(prediction[0].predicted_ovulation_day);
+          const today = new Date(); // Create a new Date object
+          today.setHours(0, 0, 0, 0);
+          // console.log("Today's date:", today);
+          const predictedStartDate = new Date(
+            prediction[0].predicted_start_date
+          );
+          predictedStartDate.setHours(0, 0, 0, 0);
+          // console.log("Predicted date:", predictedStartDate);
+          setPeriodStartDate(predictedStartDate);
+          const differenceInTime =
+            predictedStartDate.getTime() - today.getTime();
+          // console.log("Difference in time:", differenceInTime);
+          const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+          // console.log("Difference in days:", differenceInDays);
+          setDaysDifference(differenceInDays);
+        } else {
+          setPredictedResults(null);
+          // console.log("No predicted data found");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching predicted data:", error.message);
+    }
+  }
+
   useEffect(() => {
     // Fetch predicted results from the database and set them to the state
-    async function fetchPredictedData() {
-      try {
-        const { data, error } = await supabase
-          .from("prediction_data")
-          .select("*")
-          .eq("user_id", user.id);
-        if (error) {
-          console.error("Error fetching predicted data:", error.message);
-        } else {
-          if (data && data.length > 0) {
-            const prediction = data; // Assuming there is only one prediction
-            setPredictedResults(prediction);
-            setPredictedStartDate(
-              formatDate(prediction[0].predicted_start_date)
-            );
-            setPredictedEndDate(formatDate(prediction[0].predicted_end_date));
-            setPredictedCycleLength(prediction[0].predicted_cycle_length);
-            setPredictedLutealPhaseLength(
-              prediction[0].predicted_luteal_length
-            );
-            setPredictedOvulationDate(
-              formatDate(prediction[0].predicted_ovulation_date)
-            );
-            setPredictedOvulationDay(prediction[0].predicted_ovulation_day);
-            const today = new Date(); // Create a new Date object
-            today.setHours(0, 0, 0, 0);
-            // console.log("Today's date:", today);
-            const predictedStartDate = new Date(
-              prediction[0].predicted_start_date
-            );
-            predictedStartDate.setHours(0, 0, 0, 0);
-            // console.log("Predicted date:", predictedStartDate);
-            setPeriodStartDate(predictedStartDate);
-            const differenceInTime =
-              predictedStartDate.getTime() - today.getTime();
-            // console.log("Difference in time:", differenceInTime);
-            const differenceInDays = differenceInTime / (1000 * 3600 * 24);
-            // console.log("Difference in days:", differenceInDays);
-            setDaysDifference(differenceInDays);
-          } else {
-            setPredictedResults(null);
-            // console.log("No predicted data found");
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching predicted data:", error.message);
-      }
-    }
-    const formatDate = (dateString) => {
-      const options = { day: "2-digit", month: "2-digit", year: "numeric" };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    };
 
     fetchPredictedData();
-    sendNotification();
+    // sendNotification();
   }, [predictedStartDate]); // Run the effect only once on component mount
 
   return (
@@ -181,6 +212,10 @@ export default function Guidance({ session }) {
                     Ovulation Date: {predictedOvulationDate} (Day:{" "}
                     {predictedOvulationDay})
                   </Text>
+                  <Button
+                    title="Refresh"
+                    onPress={() => fetchPredictedData()}
+                  />
                 </Card.Content>
               </Card>
             </View>
@@ -220,11 +255,18 @@ export default function Guidance({ session }) {
                 </Text>
               )}
 
+              <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="time"
+                onConfirm={handleConfirm}
+                onCancel={hideDatePicker}
+              />
               <Text>
-                You will receive two scheduled reminders the day before your
-                period starts to collect personal hygiene products from your
-                nearest free pickup location.
+                Period reminder is currently set to {""}
+                {notificationTimeHour}:{notificationTimeMinute} a day before
+                your period starts.
               </Text>
+              <Button title="Update reminder time" onPress={showDatePicker} />
               <Text style={styles.productInfoText}>
                 Please check the "UniProducts" tab for more information on how
                 to get to your nearest location.
@@ -348,5 +390,11 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     textAlign: "center",
     fontWeight: "bold",
+  },
+  notificationTimeInput: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
   },
 });

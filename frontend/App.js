@@ -17,6 +17,11 @@ export default function App() {
   registerNNPushToken(17728, "TG4wD6XhTpNs69DfbtVLbo");
 
   const [session, setSession] = useState(null);
+  const [predictionData, setPredictionData] = useState(null);
+
+  const updatePredictionData = (data) => {
+    setPredictionData(data);
+  };
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
@@ -35,7 +40,12 @@ export default function App() {
         <Tab.Navigator>
           <Tab.Screen
             name=" My Tracker"
-            children={() => <HomePage session={session} />}
+            children={() => (
+              <HomePage
+                session={session}
+                updatePrediction={updatePredictionData}
+              />
+            )}
             options={{
               tabBarIcon: ({ focused }) => (
                 <Image
@@ -53,7 +63,9 @@ export default function App() {
           ></Tab.Screen>
           <Tab.Screen
             name="UniCare"
-            children={() => <Guidance session={session} />}
+            children={() => (
+              <Guidance session={session} predictionData={predictionData} />
+            )}
             options={{
               tabBarIcon: ({ focused }) => (
                 <Image
