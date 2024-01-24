@@ -13,6 +13,10 @@ import { supabase } from "../lib/supabase";
 import { IconButton } from "react-native-paper";
 import axios from "axios";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import LottieView from "lottie-react-native";
+import CalendarAnimation from "../utils/CalendarAnimation.json";
+import LocationAnimation from "../utils/LocationAnimation.json";
+import TimeAnimation from "../utils/TimeAnimation.json";
 
 export default function Guidance({ session }) {
   const user = session?.user;
@@ -62,20 +66,20 @@ export default function Guidance({ session }) {
   const sendNotification = async () => {
     const currentDate = new Date();
     // currentDate.setHours(0, 0, 0, 0);
-    console.log("Current date:", currentDate);
+    // console.log("Current date:", currentDate);
 
     // Check if periodStartDate is not null
     if (periodStartDate) {
       const notificationDate = new Date(periodStartDate);
       notificationDate.setDate(notificationDate.getDate() - 1);
-      console.log("Notification time hour:", notificationTimeHour);
-      console.log("Notification time minute:", notificationTimeMinute);
+      // console.log("Notification time hour:", notificationTimeHour);
+      // console.log("Notification time minute:", notificationTimeMinute);
       notificationDate.setHours(notificationTimeHour, notificationTimeMinute);
-      console.log("Notification date:", notificationDate);
+      // console.log("Notification date:", notificationDate);
 
       // Calculate the time difference in milliseconds
       const timeDifference = notificationDate.getTime() - currentDate.getTime();
-      console.log("Time difference:", timeDifference);
+      // console.log("Time difference:", timeDifference);
       if (timeDifference > 0) {
         // Prepare the post body for NativeNotify API
         setTimeout(async () => {
@@ -218,6 +222,14 @@ export default function Guidance({ session }) {
                   />
                 </Card.Content>
               </Card>
+              <View style={styles.HomePageAnimation}>
+                <LottieView
+                  source={CalendarAnimation} // Replace with your animation source
+                  autoPlay
+                  loop
+                  style={styles.CalendarAnimation}
+                />
+              </View>
             </View>
           ) : (
             <View style={styles.predictions}>
@@ -273,6 +285,14 @@ export default function Guidance({ session }) {
               </Text>
             </Card.Content>
           </Card>
+          <View style={styles.HomePageAnimation}>
+            <LottieView
+              source={LocationAnimation} // Replace with your animation source
+              autoPlay
+              loop
+              style={styles.LocationAnimation}
+            />
+          </View>
         </View>
         <View style={styles.lutealPhaseGuidance}>
           <Text style={styles.sectionHeader}>Luteal Phase</Text>
@@ -312,6 +332,14 @@ export default function Guidance({ session }) {
                 )}
               </Text>
             </Card.Content>
+            <View style={styles.HomePageAnimation}>
+              <LottieView
+                source={TimeAnimation} // Replace with your animation source
+                autoPlay
+                loop
+                style={styles.TimeAnimation}
+              />
+            </View>
           </Card>
           <View style={styles.extraInfoCard}>
             <Card>
@@ -351,6 +379,25 @@ const styles = StyleSheet.create({
   predictionCard: {
     margin: 10,
   },
+  CalendarAnimation: {
+    width: 180,
+    height: 200,
+    marginTop: -120,
+    marginLeft: 120,
+  },
+  LocationAnimation: {
+    width: 70,
+    height: 200,
+    marginTop: -145,
+    marginLeft: 165,
+  },
+  TimeAnimation: {
+    width: 150,
+    height: 200,
+    marginTop: -20,
+    marginLeft: 70,
+    marginBottom: -50,
+  },
   predictionText: {
     marginBottom: 8,
   },
@@ -366,7 +413,8 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingLeft: 10,
     paddingRight: 10,
-    marginBottom: 20,
+    marginBottom: -40,
+    marginTop: -70,
   },
   lutealPhaseGuidance: {
     width: "100%",
