@@ -10,6 +10,8 @@ import {
 import { Button } from "react-native-elements";
 import { supabase } from "../lib/supabase";
 import { IconButton } from "react-native-paper";
+import LottieView from "lottie-react-native";
+import ProfileAnimation from "../utils/ProfileAnimation.json";
 
 export default function Profile({ session }) {
   const [loading, setLoading] = useState(true);
@@ -62,15 +64,15 @@ export default function Profile({ session }) {
 
       let { error } = await supabase.from("profiles").upsert({
         id: session?.user.id,
-        // username: username,
-        uniEmail: uniEmail,
+        username: username,
+        // uniEmail: uniEmail,
       });
 
       if (error) {
         throw error;
       } else {
-        // setUserName(username);
-        setUniEmail(uniEmail);
+        setUserName(username);
+        // setUniEmail(uniEmail);
         alert("Profile updated successfully");
       }
     } catch (error) {
@@ -120,9 +122,11 @@ export default function Profile({ session }) {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={styles.headerContainer}>
             {!username ? (
-              <Text style={styles.headerText}>Profile</Text>
+              <Text style={styles.headerText}>UniClean Profile</Text>
             ) : (
-              <Text style={styles.headerText}>{username}'s Profile</Text>
+              <Text style={styles.headerText}>
+                {username}'s UniClean Profile
+              </Text>
             )}
             <IconButton
               icon="location-exit"
@@ -130,15 +134,27 @@ export default function Profile({ session }) {
               onPress={() => supabase.auth.signOut()}
             />
           </View>
-          <View style={styles.fieldContainer}>
-            <Text style={styles.boldText}>Name:</Text>
-            <TextInput
-              value={fullname}
-              placeholder={fullname}
-              style={styles.input}
-              editable={false}
-            />
+          <View style={styles.inlineNameContainer}>
+            <View style={{ ...styles.fieldContainer, flex: 1 }}>
+              <Text style={styles.boldText}>Username:</Text>
+              <TextInput
+                value={username}
+                onChangeText={setUserName}
+                placeholder={username}
+                style={styles.input}
+              />
+            </View>
+            <View style={{ ...styles.fieldContainer, flex: 1 }}>
+              <Text style={styles.boldText}>Name: </Text>
+              <TextInput
+                value={fullname}
+                placeholder={fullname}
+                style={styles.input}
+                editable={false}
+              />
+            </View>
           </View>
+
           <View style={styles.fieldContainer}>
             <Text style={styles.boldText}>Email:</Text>
             <TextInput
@@ -148,15 +164,7 @@ export default function Profile({ session }) {
               editable={false}
             />
           </View>
-          <View style={styles.fieldContainer}>
-            <Text style={styles.boldText}>University Email:</Text>
-            <TextInput
-              value={uniEmail}
-              onChangeText={setUniEmail}
-              placeholder={uniEmail}
-              style={styles.input}
-            />
-          </View>
+
           <View>
             <View style={styles.fieldContainer}>
               <Text style={styles.boldText}>New Password:</Text>
@@ -164,7 +172,7 @@ export default function Profile({ session }) {
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Enter New Password"
-                placeholderTextColor={"silver"}
+                placeholderTextColor={"white"}
                 secureTextEntry
                 style={styles.input}
               />
@@ -175,15 +183,15 @@ export default function Profile({ session }) {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 placeholder="Confirm New Password"
-                placeholderTextColor={"silver"}
+                placeholderTextColor={"white"}
                 secureTextEntry
                 style={styles.input}
               />
             </View>
           </View>
-          <View style={styles.inlineInputContainer}>
+          <View style={[styles.inlineInputContainer, styles.buttonContainer]}>
             <Button
-              title="Update Uni Email"
+              title="Update Username"
               onPress={updateProfile}
               buttonStyle={[styles.button]}
             />
@@ -191,6 +199,14 @@ export default function Profile({ session }) {
               title="Update Password"
               onPress={updatePassword}
               buttonStyle={[styles.button]}
+            />
+          </View>
+          <View style={styles.HomePageAnimation}>
+            <LottieView
+              source={ProfileAnimation} // Replace with your animation source
+              autoPlay
+              loop
+              style={styles.ProfileAnimation}
             />
           </View>
         </ScrollView>
@@ -238,6 +254,15 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     marginTop: 50,
   },
+  inlineNameContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 3,
+    width: "100%",
+    // paddingLeft: 20,
+    // paddingRight: 20,
+    marginTop: 5,
+  },
   fieldContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -252,5 +277,16 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: "bold",
+  },
+  ProfileAnimation: {
+    width: 300,
+    height: 300,
+    marginTop: 83,
+    marginLeft: 28,
+    // marginBottom: -50,
+  },
+  buttonContainer: {
+    marginTop: 30,
+    marginBottom: 30,
   },
 });

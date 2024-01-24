@@ -170,7 +170,7 @@ export default function Products({ session }) {
                   title={`${
                     closestMarker.title
                   }  ${closestMarker.distance.toFixed(4)} km away`}
-                  description={`Where to find them:\n${closestMarker.directions}\nProducts availability: Yes`}
+                  description={`Where to find them:\n${closestMarker.directions}\nProducts availability: Tampons - Yes,\nSanitary pads - Yes`}
                   pinColor="red" // Use the default red pin color
                   zIndex={0}
                 />
@@ -199,7 +199,7 @@ export default function Products({ session }) {
                   title={`${
                     secondClosestMarker.title
                   }  ${secondClosestMarker.distance.toFixed(4)} km away`}
-                  description={`Where to find them:\n${secondClosestMarker.directions}\nProducts availability: Yes`}
+                  description={`Where to find them:\n${secondClosestMarker.directions}\nProducts availability: Tampons - Yes,\nSanitary pads - Yes`}
                   // pinColor="green"
                 />
               </>
@@ -218,19 +218,7 @@ export default function Products({ session }) {
                 description={`${marker.distance.toFixed(4)} km away`}
               />
             ))}
-            <Text
-              style={{
-                position: "absolute",
-                top: 100,
-                backgroundColor: "white",
-                padding: 10,
-                borderRadius: 1,
-                minHeight: 50,
-                minWidth: "100%",
-                flex: 1,
-                textAlign: "center",
-              }}
-            >
+            <Text style={styles.nearLocationsHeader}>
               {sortedMarkers.filter((marker) => marker.distance <= 1).length}{" "}
               location(s) within 1 km of your current location{"\n"}
               Click on the markers to see more details.
@@ -258,5 +246,17 @@ const styles = StyleSheet.create({
   map: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
+    marginBottom: 60,
+  },
+  nearLocationsHeader: {
+    position: "absolute",
+    top: 130,
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 1,
+    minHeight: 50,
+    minWidth: "100%",
+    flex: 1,
+    textAlign: "center",
   },
 });
