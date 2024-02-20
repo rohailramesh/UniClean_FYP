@@ -56,6 +56,12 @@ export default function HomePage({ session, updatePrediction }) {
         return;
       }
 
+      //Check if the ovulation day is an integer else alert the user
+      if (isNaN(ovulationDay)) {
+        alert("Please enter a valid ovulation day.");
+        return;
+      }
+
       // Check if entered end date is within the last 10 months
       if (
         enteredEndDate > currentDate ||
@@ -198,7 +204,7 @@ export default function HomePage({ session, updatePrediction }) {
       // console.log("Fetched cycleData:\n", formattedCycleData);
 
       // Send fetched cycle data for predictions
-      const serverUrl = "http://10.47.35.14:8000/api/predict";
+      const serverUrl = "http://10.47.34.61:8000/api/predict";
 
       const response = await fetch(serverUrl, {
         method: "POST",
