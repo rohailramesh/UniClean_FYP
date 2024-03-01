@@ -33,7 +33,37 @@ export default function Guidance({ session }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [notificationTimeHour, setNotificationTimeHour] = useState(null);
   const [notificationTimeMinute, setNotificationTimeMinute] = useState(null);
-  const userFullName = user?.user_metadata.fullname;
+  const [userFullName, setUserFullName] = useState("");
+
+  const fetchUserFullName = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("fullname")
+        .eq("id", user.id);
+
+      if (error) {
+        console.error("Error fetching user's full name:", error);
+        Alert.alert(
+          "Error",
+          "An error occurred while fetching user's full name."
+        );
+        return;
+      }
+
+      if (data.length > 0) {
+        setUserFullName(data[0].fullname);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    }
+  };
+
+  // run the fetchUserFullName function when the component mounts
+  useEffect(() => {
+    fetchUserFullName();
+  }, []);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);

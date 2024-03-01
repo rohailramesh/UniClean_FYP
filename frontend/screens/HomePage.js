@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -24,12 +24,44 @@ export default function HomePage({ session, updatePrediction }) {
   const [ovulationDay, setOvulationDay] = useState("");
   const [predictedResults, setPredictedResults] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
-  const userFullName = user?.user_metadata.fullname;
+  // const userFullName = user?.user_metadata.fullname;
+  const [userFullName, setUserFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [animationFinished, setAnimationFinished] = useState(false);
   const [predictionCardVisible, setPredictionCardVisible] = useState(true);
   const [showButton, setShowButton] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
+
+  // get user's full name from the 'Profiles' table in supabase database and update the state with it
+  const fetchUserFullName = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("fullname")
+        .eq("id", user.id);
+
+      if (error) {
+        console.error("Error fetching user's full name:", error);
+        Alert.alert(
+          "Error",
+          "An error occurred while fetching user's full name."
+        );
+        return;
+      }
+
+      if (data.length > 0) {
+        setUserFullName(data[0].fullname);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    }
+  };
+
+  // run the fetchUserFullName function when the component mounts
+  useEffect(() => {
+    fetchUserFullName();
+  }, []);
 
   const showLoader = () => {
     setLoading(true);
@@ -63,14 +95,16 @@ export default function HomePage({ session, updatePrediction }) {
       }
 
       // Check if entered end date is within the last 10 months
-      if (
-        enteredEndDate > currentDate ||
-        enteredEndDate <
-          new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1)
-      ) {
-        alert("Please enter a valid end date within the last 12 months.");
-        return;
-      }
+      // if (
+      //   enteredEndDate > currentDate ||
+      //   enteredEndDate <
+      //     new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1)
+      // ) {
+      //   alert("Please enter a valid end date within the last 12 months.");
+      //   return;
+      // }
+
+      // add the cycle data point if the end date is still in the future
 
       // Calculate cycle length and ovulation date
       const timeDifference =
@@ -204,7 +238,7 @@ export default function HomePage({ session, updatePrediction }) {
       // console.log("Fetched cycleData:\n", formattedCycleData);
 
       // Send fetched cycle data for predictions
-      const serverUrl = "http://10.47.34.61:8000/api/predict";
+      const serverUrl = "http://10.47.34.114:8000/api/predict";
 
       const response = await fetch(serverUrl, {
         method: "POST",
