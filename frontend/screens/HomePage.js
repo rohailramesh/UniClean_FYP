@@ -188,7 +188,8 @@ export default function HomePage({ session, updatePrediction }) {
         return;
       }
 
-      alert("Cycle data stored successfully!");
+      // alert("Cycle data stored successfully!");
+      Alert.alert("Success", "Cycle data stored successfully!");
 
       // Clear form and dataPoints
       setStartDate("");
@@ -238,7 +239,7 @@ export default function HomePage({ session, updatePrediction }) {
       // console.log("Fetched cycleData:\n", formattedCycleData);
 
       // Send fetched cycle data for predictions
-      const serverUrl = "http://10.47.34.114:8000/api/predict";
+      const serverUrl = "http://10.47.35.73:8000/api/predict";
 
       const response = await fetch(serverUrl, {
         method: "POST",
