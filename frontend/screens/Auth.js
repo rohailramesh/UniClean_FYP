@@ -24,6 +24,11 @@ export default function Auth() {
 
   async function handleAuthentication() {
     setLoading(true);
+    if (!email.endsWith("qmul.ac.uk")) {
+      Alert.alert("Error", "Please sign up with your QMUL email");
+      setLoading(false);
+      return;
+    }
 
     if (isSignUp) {
       const { error } = await supabase.auth.signUp({
@@ -76,12 +81,14 @@ export default function Auth() {
                     value={fullname}
                     onChangeText={setFullName}
                     placeholder="Full Name"
+                    placeholderTextColor="black"
                     style={styles.signupInput}
                   />
                   <TextInput
                     value={username}
                     onChangeText={setUserName}
                     placeholder="Username"
+                    placeholderTextColor="black"
                     style={styles.signupInput}
                   />
                 </View>
@@ -93,6 +100,7 @@ export default function Auth() {
               value={email}
               onChangeText={setEmail}
               placeholder="Email"
+              placeholderTextColor="black"
               style={isSignUp ? styles.signupInput : styles.signinInput}
             />
             <TextInput
@@ -100,6 +108,7 @@ export default function Auth() {
               onChangeText={setPassword}
               placeholder="Password"
               secureTextEntry
+              placeholderTextColor="black"
               style={isSignUp ? styles.signupInput : styles.signinInput}
             />
           </View>
@@ -149,6 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 15,
     backgroundColor: "#fff",
+    color: "black",
   },
   signinInput: {
     width: "100%",
@@ -157,6 +167,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 15,
     backgroundColor: "#f5f5f5",
+    color: "black",
   },
   inlineInputContainer: {
     flexDirection: "row",

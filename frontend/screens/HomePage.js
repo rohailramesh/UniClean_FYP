@@ -32,6 +32,9 @@ export default function HomePage({ session, updatePrediction }) {
   const [showButton, setShowButton] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
 
+  //add a counter which keeps track of how many cycles have had a short luteal phase length and if it is more than 3, alert the user to consult a doctor
+  const [shortLutealPhaseCounter, setShortLutealPhaseCounter] = useState(0);
+
   // get user's full name from the 'Profiles' table in supabase database and update the state with it
   const fetchUserFullName = async () => {
     try {
@@ -275,6 +278,14 @@ export default function HomePage({ session, updatePrediction }) {
           alert(
             "Your predicted luteal phase length is less than 11 days. Please consult your doctor."
           );
+          setShortLutealPhaseCounter(shortLutealPhaseCounter + 1);
+        }
+
+        // alert the user to consult a doctor if the short luteal phase length counter is more than 3
+        if (shortLutealPhaseCounter > 3) {
+          alert(
+            "You have had more than 3 cycles with a short luteal phase length. Please consult your doctor."
+          );
         }
 
         updatePrediction({
@@ -318,6 +329,7 @@ export default function HomePage({ session, updatePrediction }) {
                 predicted_end_date: predictedEndDate,
                 predicted_ovulation_date: predictedOvulationDate,
                 predicted_period_start_date: predictedStartDate,
+                short_Luteal_Phase_Counter: shortLutealPhaseCounter,
               },
             ]);
 
@@ -344,6 +356,7 @@ export default function HomePage({ session, updatePrediction }) {
               predicted_end_date: predictedEndDate,
               predicted_ovulation_date: predictedOvulationDate,
               predicted_period_start_date: predictedStartDate,
+              shortLutealPhaseCounter: shortLutealPhaseCounter,
             })
             .eq("user_id", user.id);
 
