@@ -43,5 +43,5 @@
     "@babel/core": "^7.20.0"
   },
   "private": true,
-  "proxy": "http://10.47.35.73:8000"
+  "proxy": "http://10.47.34.174:8000"
 }

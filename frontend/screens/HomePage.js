@@ -66,6 +66,35 @@ export default function HomePage({ session, updatePrediction }) {
     fetchUserFullName();
   }, []);
 
+  useEffect(() => {
+    const fetchCounterValue = async () => {
+      try {
+        // Fetch the shortLutealPhaseCounter value from the database
+        const { data, error } = await supabase
+          .from("prediction_data")
+          .select("shortLutealPhaseCounter")
+          .eq("user_id", user.id)
+          .single(); // Assuming there's only one row per user
+
+        if (error) {
+          console.error("Error fetching shortLutealPhaseCounter value:", error);
+          return;
+        }
+
+        // Initialize the shortLutealPhaseCounter state with the fetched value
+        if (data) {
+          setShortLutealPhaseCounter(data.shortLutealPhaseCounter);
+          console.log("counter: ", shortLutealPhaseCounter);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        // Handle error
+      }
+    };
+
+    fetchCounterValue();
+  }, []);
+
   const showLoader = () => {
     setLoading(true);
     setTimeout(() => {
@@ -242,7 +271,7 @@ export default function HomePage({ session, updatePrediction }) {
       // console.log("Fetched cycleData:\n", formattedCycleData);
 
       // Send fetched cycle data for predictions
-      const serverUrl = "http://10.47.35.73:8000/api/predict";
+      const serverUrl = "http://10.47.34.174:8000/api/predict";
 
       const response = await fetch(serverUrl, {
         method: "POST",
@@ -276,15 +305,17 @@ export default function HomePage({ session, updatePrediction }) {
         // alert if luteal phase length is less than 11 days
         if (predictedLutealPhaseLength < 11) {
           alert(
-            "Your predicted luteal phase length is less than 11 days. Please consult your doctor."
+            "Your predicted luteal phase length for upcoming cycle is less than 11 days. Use UniChat for further queries."
           );
           setShortLutealPhaseCounter(shortLutealPhaseCounter + 1);
+          // console.log("Short luteal phase counter: ", shortLutealPhaseCounter);
         }
 
         // alert the user to consult a doctor if the short luteal phase length counter is more than 3
-        if (shortLutealPhaseCounter > 3) {
-          alert(
-            "You have had more than 3 cycles with a short luteal phase length. Please consult your doctor."
+        if (shortLutealPhaseCounter >= 3) {
+          Alert.alert(
+            "⚠️WARNING⚠️",
+            "You have 3 or more predicted cycles with a short luteal phase length. Please consult your doctor."
           );
         }
 
@@ -329,7 +360,7 @@ export default function HomePage({ session, updatePrediction }) {
                 predicted_end_date: predictedEndDate,
                 predicted_ovulation_date: predictedOvulationDate,
                 predicted_period_start_date: predictedStartDate,
-                short_Luteal_Phase_Counter: shortLutealPhaseCounter,
+                shortLutealPhaseCounter: shortLutealPhaseCounter,
               },
             ]);
 

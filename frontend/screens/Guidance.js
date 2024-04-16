@@ -34,6 +34,7 @@ export default function Guidance({ session }) {
   const [notificationTimeHour, setNotificationTimeHour] = useState(null);
   const [notificationTimeMinute, setNotificationTimeMinute] = useState(null);
   const [userFullName, setUserFullName] = useState("");
+  const [lutealPhaseCounter, setLutealPhaseCounter] = useState(null);
 
   const fetchUserFullName = async () => {
     try {
@@ -174,6 +175,7 @@ export default function Guidance({ session }) {
             formatDate(prediction[0].predicted_ovulation_date)
           );
           setPredictedOvulationDay(prediction[0].predicted_ovulation_day);
+          setLutealPhaseCounter(prediction[0].shortLutealPhaseCounter);
           const today = new Date(); // Create a new Date object
           today.setHours(0, 0, 0, 0);
           // console.log("Today's date:", today);
@@ -329,20 +331,57 @@ export default function Guidance({ session }) {
           <Card>
             <Card.Content>
               <Text>
-                A safe luteal phase length is considered as 11 days or more
+                <Text style={{ fontWeight: "bold" }}>
+                  Safe luteal phase length:
+                </Text>{" "}
+                11 days or more
                 {"\n"}
                 {"\n"}
                 {predictedResults && predictedResults.length ? (
                   predictedLutealPhaseLength < 11 ? (
                     <>
                       <Text>
-                        Your luteal phase length for the upcoming cycle will be{" "}
-                        {predictedLutealPhaseLength} days. {"\n"}
+                        <Text style={{ fontWeight: "bold" }}>
+                          Upcoming cycle's luteal phase length:{" "}
+                        </Text>
+                        {predictedLutealPhaseLength} days {"\n"}
                       </Text>
-                      <Text style={styles.moreDetailsText}>
+                      <Text>
                         {"\n"}
-                        You require medical attention. Please consult your GP or
-                        access UniChat to get the right help.
+                        <Text style={{ fontWeight: "bold" }}>
+                          Number of alerts received for previous cycles:{" "}
+                        </Text>
+                        {lutealPhaseCounter}
+                        {"\n"}
+                        {lutealPhaseCounter < 3 ? (
+                          <>
+                            {"\n"}
+                            <Text>
+                              No immediate attention required. If you have any
+                              concerns, use UniChat for more information and
+                              next steps.
+                            </Text>
+                          </>
+                        ) : (
+                          <>
+                            {"\n"}
+                            <Text>
+                              <Text
+                                style={{
+                                  fontWeight: "bold",
+                                  fontSize: 24,
+                                  alignContent: "center",
+                                  textAlign: "center",
+                                }}
+                              >
+                                ⚠️WARNING⚠️{" "}
+                              </Text>
+                              {"\n"}Three or more alerts received. Please
+                              consult a healthcare provider for further
+                              evaluation.
+                            </Text>
+                          </>
+                        )}
                       </Text>
                     </>
                   ) : (
@@ -375,7 +414,7 @@ export default function Guidance({ session }) {
             <Card>
               <Card.Content>
                 <Text style={styles.moreDetailsText}>
-                  Want to learn about your luteal phase? Ask UniChat.
+                  Not sure what to do? Head over to UniChat.
                 </Text>
               </Card.Content>
             </Card>
@@ -418,7 +457,7 @@ const styles = StyleSheet.create({
   LocationAnimation: {
     width: 70,
     height: 200,
-    marginTop: -145,
+    marginTop: -130,
     marginLeft: 165,
   },
   TimeAnimation: {
