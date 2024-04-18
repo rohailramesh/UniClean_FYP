@@ -1,3 +1,5 @@
+//This file handles the products screen. It uses the react-native-maps library to display a map with markers for the nearest locations where products are available. It also uses the expo-location library to get the user's current location and calculate the distance to the nearest locations.
+
 import React, { useState, useEffect } from "react";
 import MapView, { Marker, Circle } from "react-native-maps";
 import {
@@ -200,7 +202,7 @@ export default function Products({ session }) {
                     secondClosestMarker.title
                   }  ${secondClosestMarker.distance.toFixed(4)} km away`}
                   description={`Where to find them:\n${secondClosestMarker.directions}\nProducts availability: Tampons - Yes,\nSanitary pads - Yes`}
-                  // pinColor="green"
+                  zIndex={0}
                 />
               </>
             )}
@@ -224,7 +226,6 @@ export default function Products({ session }) {
               Click on the markers to see more details.
             </Text>
           </MapView>
-          {/* <Button title="Refresh Map" onPress={handleRefresh} /> */}
         </>
       )}
     </View>

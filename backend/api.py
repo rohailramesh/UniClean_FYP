@@ -6,11 +6,11 @@ import tensorflow as tf
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:19006"])
 
-# Load the model outside of the view function for efficiency
+# Loading model
 model_new = tf.keras.models.load_model("/Users/rohailramesh/Documents/GitHub/UniClean_FYP/backend/models/best_model.h5")
 
-# Define the expected number of columns in your input data
-expected_column_count = 2  # Replace with the correct number of columns
+# Expected number of columns in input data
+expected_column_count = 2  
 
 @app.route('/api/predict', methods=['POST'])
 def predict_view():
@@ -51,7 +51,7 @@ def predict_view():
         predicted_cycle_length = predicted[0][0].round()
         predicted_ovulation_day = predicted[0][1].round()
 
-        # Prepare the response
+        # Response
         response_data = {
             "message": "Data received and processed successfully.",
             "predictedCycleLength": predicted_cycle_length,
@@ -68,5 +68,4 @@ def predict_view():
 
 
 if __name__ == '__main__':
-    # run app in debug mode on port 8000
     app.run(debug=True, port=8000, host='0.0.0.0')

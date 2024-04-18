@@ -1,3 +1,5 @@
+// This file contains the code for the Profile screen, which allows users to view and update their profile information.
+
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,

@@ -1,3 +1,5 @@
+//Setting file for the bot chat
+
 import { View } from "react-native";
 import { WebView } from "react-native-webview";
 import getBotpressWebchat from "../utils/getBotpressWebchat";

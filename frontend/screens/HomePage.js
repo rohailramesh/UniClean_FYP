@@ -1,3 +1,5 @@
+//This is the main page of the app. It allows users to enter their cycle data and get predictions for their upcoming cycle. It also displays the user's full name and allows them to sign out. Alerts are also displayed to guide the user on how to use the app for the first time. The user is also alerted if their predicted luteal phase length is less than 11 days and if they have 3 or more predicted cycles with a short luteal phase length, they are advised to consult a doctor. The user is also alerted to consult a doctor if the short luteal phase length counter is more than 3. The user can also access the UniCare screen for more details.
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -24,7 +26,6 @@ export default function HomePage({ session, updatePrediction }) {
   const [ovulationDay, setOvulationDay] = useState("");
   const [predictedResults, setPredictedResults] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
-  // const userFullName = user?.user_metadata.fullname;
   const [userFullName, setUserFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [animationFinished, setAnimationFinished] = useState(false);
@@ -32,10 +33,8 @@ export default function HomePage({ session, updatePrediction }) {
   const [showButton, setShowButton] = useState(true);
   const [showAlert, setShowAlert] = useState(false);
 
-  //add a counter which keeps track of how many cycles have had a short luteal phase length and if it is more than 3, alert the user to consult a doctor
   const [shortLutealPhaseCounter, setShortLutealPhaseCounter] = useState(0);
 
-  // get user's full name from the 'Profiles' table in supabase database and update the state with it
   const fetchUserFullName = async () => {
     try {
       const { data, error } = await supabase
@@ -61,7 +60,6 @@ export default function HomePage({ session, updatePrediction }) {
     }
   };
 
-  // run the fetchUserFullName function when the component mounts
   useEffect(() => {
     fetchUserFullName();
   }, []);
@@ -69,26 +67,23 @@ export default function HomePage({ session, updatePrediction }) {
   useEffect(() => {
     const fetchCounterValue = async () => {
       try {
-        // Fetch the shortLutealPhaseCounter value from the database
         const { data, error } = await supabase
           .from("prediction_data")
           .select("shortLutealPhaseCounter")
           .eq("user_id", user.id)
-          .single(); // Assuming there's only one row per user
+          .single();
 
         if (error) {
           console.error("Error fetching shortLutealPhaseCounter value:", error);
           return;
         }
 
-        // Initialize the shortLutealPhaseCounter state with the fetched value
         if (data) {
           setShortLutealPhaseCounter(data.shortLutealPhaseCounter);
           console.log("counter: ", shortLutealPhaseCounter);
         }
       } catch (error) {
         console.error("Error:", error);
-        // Handle error
       }
     };
 
@@ -100,17 +95,15 @@ export default function HomePage({ session, updatePrediction }) {
     setTimeout(() => {
       setLoading(false);
       setAnimationFinished(true);
-    }, 5000); // Hides the loader after 5 seconds
+    }, 5000);
   };
 
   const handleAddDataPoint = () => {
     if (startDate && endDate && ovulationDay) {
-      // Add validation to ensure the user is entering the last 10 cycles
       const currentDate = new Date();
       const enteredStartDate = new Date(startDate);
       const enteredEndDate = new Date(endDate);
 
-      // Check if entered start date is within the last 10 months
       if (
         enteredStartDate > currentDate ||
         enteredStartDate <
@@ -120,25 +113,11 @@ export default function HomePage({ session, updatePrediction }) {
         return;
       }
 
-      //Check if the ovulation day is an integer else alert the user
       if (isNaN(ovulationDay)) {
         alert("Please enter a valid ovulation day.");
         return;
       }
 
-      // Check if entered end date is within the last 10 months
-      // if (
-      //   enteredEndDate > currentDate ||
-      //   enteredEndDate <
-      //     new Date(currentDate.getFullYear(), currentDate.getMonth() - 12, 1)
-      // ) {
-      //   alert("Please enter a valid end date within the last 12 months.");
-      //   return;
-      // }
-
-      // add the cycle data point if the end date is still in the future
-
-      // Calculate cycle length and ovulation date
       const timeDifference =
         enteredEndDate.getTime() - enteredStartDate.getTime();
       const dayDifference = Math.round(timeDifference / (1000 * 60 * 60 * 24));
@@ -148,7 +127,6 @@ export default function HomePage({ session, updatePrediction }) {
       ovulationDate.setDate(ovulationDate.getDate() + parseInt(ovulationDay));
 
       if (editingIndex !== null) {
-        // If editing, update the existing data point
         const updatedDataPoints = [...dataPoints];
         updatedDataPoints[editingIndex] = {
           startDate,
@@ -160,7 +138,6 @@ export default function HomePage({ session, updatePrediction }) {
         setDataPoints(updatedDataPoints);
         setEditingIndex(null);
       } else {
-        // If not editing, add a new data point
         setDataPoints([
           ...dataPoints,
           { startDate, endDate, cycleLength, ovulationDate, ovulationDay },
@@ -177,7 +154,6 @@ export default function HomePage({ session, updatePrediction }) {
     }
   };
   const handleEditDataPoint = (index) => {
-    // Set the values of the data point to be edited in the form
     const dataPointToEdit = dataPoints[index];
     setStartDate(dataPointToEdit.startDate);
     setEndDate(dataPointToEdit.endDate);
@@ -186,7 +162,6 @@ export default function HomePage({ session, updatePrediction }) {
   };
 
   const handleDeleteDataPoint = (index) => {
-    // Implement logic to delete the data point at the specified index
     const remainingDataPoints = [...dataPoints];
     remainingDataPoints.splice(index, 1);
     setDataPoints(remainingDataPoints);
@@ -199,7 +174,6 @@ export default function HomePage({ session, updatePrediction }) {
         return;
       }
 
-      // Insert data into cycle_data table
       const { data, error } = await supabase.from("cycle_data").insert(
         dataPoints.map((point) => ({
           user_id: user.id,
@@ -220,10 +194,8 @@ export default function HomePage({ session, updatePrediction }) {
         return;
       }
 
-      // alert("Cycle data stored successfully!");
       Alert.alert("Success", "Cycle data stored successfully!");
 
-      // Clear form and dataPoints
       setStartDate("");
       setEndDate("");
       setOvulationDay("");
@@ -237,13 +209,11 @@ export default function HomePage({ session, updatePrediction }) {
   const handlePredictionRequest = async () => {
     try {
       showLoader();
-      // Fetch cycle data for the current user from the database
       const { data: cycleData, error: cycleDataError } = await supabase
         .from("cycle_data")
         .select("start_date, end_date, cycle_length, ovulation_day")
         .eq("user_id", user.id)
         .order("end_date", { ascending: false });
-      // .range(0, 9); // Fetch the last 10 cycles
 
       if (cycleDataError) {
         console.error("Error fetching cycle data:", cycleDataError);
@@ -256,11 +226,9 @@ export default function HomePage({ session, updatePrediction }) {
         return;
       }
 
-      // Get the latest entered data
       const latestEntry = cycleData[0];
       console.log("Latest entry:\n", latestEntry);
 
-      // Log the fetched cycleData in the desired format
       const formattedCycleData = cycleData.map(
         ({ cycle_length, ovulation_day }) => [
           parseInt(cycle_length),
@@ -268,9 +236,6 @@ export default function HomePage({ session, updatePrediction }) {
         ]
       );
 
-      // console.log("Fetched cycleData:\n", formattedCycleData);
-
-      // Send fetched cycle data for predictions
       const serverUrl = "http://10.47.34.174:8000/api/predict";
 
       const response = await fetch(serverUrl, {
@@ -283,10 +248,7 @@ export default function HomePage({ session, updatePrediction }) {
 
       const responseData = await response.json();
       if (responseData) {
-        // Calculate predicted dates based on the latest entry
-        // const { cycle_length, ovulation_day } = latestEntry;
         const predictedStartDate = new Date(latestEntry.end_date);
-        predictedStartDate.setDate(predictedStartDate.getDate() + 1); // Predicted start date is the day after the last end date
         const predictedEndDate = new Date(predictedStartDate);
         predictedEndDate.setDate(
           predictedEndDate.getDate() + responseData.predictedCycleLength
@@ -302,16 +264,13 @@ export default function HomePage({ session, updatePrediction }) {
         const predictedLutealPhaseLength =
           (tempOvulationDate - predictedStartDate) / (1000 * 60 * 60 * 24);
 
-        // alert if luteal phase length is less than 11 days
         if (predictedLutealPhaseLength < 11) {
           alert(
             "Your predicted luteal phase length for upcoming cycle is less than 11 days. Use UniChat for further queries."
           );
           setShortLutealPhaseCounter(shortLutealPhaseCounter + 1);
-          // console.log("Short luteal phase counter: ", shortLutealPhaseCounter);
         }
 
-        // alert the user to consult a doctor if the short luteal phase length counter is more than 3
         if (shortLutealPhaseCounter >= 3) {
           Alert.alert(
             "⚠️WARNING⚠️",
@@ -338,16 +297,14 @@ export default function HomePage({ session, updatePrediction }) {
         });
         setTimeout(() => {
           setPredictionCardVisible(true);
-        }, 5000); // Adjust the delay accordingly
+        }, 5000);
 
-        // Prevent duplicated data from being added to prediction_data table in the database
         const { data: existingPredictionData } = await supabase
           .from("prediction_data")
           .select("user_id")
           .eq("user_id", user.id);
 
         if (existingPredictionData.length < 1) {
-          // Insert prediction data into prediction_data table
           const { data, error } = await supabase
             .from("prediction_data")
             .insert([
@@ -374,9 +331,7 @@ export default function HomePage({ session, updatePrediction }) {
           }
 
           alert("Prediction data stored successfully!");
-        }
-        // update a pre-existing prediction data row in the database if any of the values have changed instead of inserting a new row
-        else {
+        } else {
           const { data, error } = await supabase
             .from("prediction_data")
             .update({
@@ -399,8 +354,6 @@ export default function HomePage({ session, updatePrediction }) {
             );
             return;
           }
-
-          // alert("Prediction data updated successfully!");
         }
       } else {
         console.error("No data");
@@ -439,7 +392,7 @@ export default function HomePage({ session, updatePrediction }) {
         </View>
         <View style={styles.HomePageAnimation}>
           <LottieView
-            source={HomePageAnimation} // Replace with your animation source
+            source={HomePageAnimation}
             autoPlay
             loop
             style={styles.HomePageAnimation}
@@ -451,11 +404,7 @@ export default function HomePage({ session, updatePrediction }) {
               title="Getting Started"
               titleStyle={{ color: "black" }}
               onPress={() => {
-                // Your existing button logic here
-
-                // Show alert and hide the button only the first time
                 if (showButton) {
-                  // alert("Welcome", "Look around");
                   Alert.alert(
                     "Getting Started",
                     "If this is your first time using UniClean, please enter your last 10 cycles to get started. \n \n  If you have already entered your data, you can skip this step. \n \n Do make sure to enter your data for the most recent cycle to get accurate predictions. \n \n  An estimate for ovulation day can be added if not known exactly. \n \n Finally, please make sure to click on 'Save Cycle' to save your data after you add it! \n \n Thankyou for using UniClean!",
@@ -471,7 +420,6 @@ export default function HomePage({ session, updatePrediction }) {
                 }
               }}
               buttonStyle={[styles.tourButton]}
-              // Add the disabled prop to conditionally disable the button
               disabled={!showButton}
             />
           )}
@@ -551,7 +499,6 @@ export default function HomePage({ session, updatePrediction }) {
             ))}
           </View>
 
-          {/* Display predicted results */}
           {animationFinished && predictedResults && predictionCardVisible && (
             <View style={styles.predictions}>
               <Card style={styles.predictionCard}>
@@ -605,7 +552,7 @@ export default function HomePage({ session, updatePrediction }) {
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-    resizeMode: "cover", // or "stretch"
+    resizeMode: "cover",
   },
   lottie: {
     width: 300,

@@ -1,3 +1,5 @@
+//Setting file for the bot chat
+
 const getBotpressWebchat = (testingConfig) => {
   const baseUrl = `https://mediafiles.botpress.cloud/${testingConfig.botId}/webchat/bot.html`;
   const html = `<html>

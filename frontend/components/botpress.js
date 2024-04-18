@@ -1,3 +1,5 @@
+// Using the Botpress webchat in UniCare screen with the config
+
 import { Button, View, ImageBackground, StyleSheet } from "react-native";
 import BpWidget from "../utils/BpWidget";
 import BpIncommingMessagesListener from "../utils/BpIncommingMessagesListener";

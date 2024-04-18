@@ -1,3 +1,5 @@
+//Connected to all the screens and the navigation bar
+
 import React, { useEffect, useState } from "react";
 import registerNNPushToken from "native-notify";
 import Auth from "./screens/Auth";

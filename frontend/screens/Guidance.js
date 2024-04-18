@@ -1,3 +1,5 @@
+//This file handles the two key use cases of the UniClean app: providing guidance on menstrual cycles and hygiene products. It fetches the user's full name from the database and displays the predicted cycle data. It also allows the user to set a reminder for their period and provides guidance on the luteal phase of the menstrual cycle.
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -61,7 +63,6 @@ export default function Guidance({ session }) {
     }
   };
 
-  // run the fetchUserFullName function when the component mounts
   useEffect(() => {
     fetchUserFullName();
   }, []);
@@ -76,43 +77,25 @@ export default function Guidance({ session }) {
 
   useEffect(() => {
     if (notificationTimeHour !== null && notificationTimeMinute !== null) {
-      // Both hour and minute are set, proceed with sending notification
       sendNotification();
     }
   }, [notificationTimeHour, notificationTimeMinute]);
 
   const handleConfirm = (time) => {
-    // console.log("Time:", time);
-    // console.log("Hours:", time.getHours());
-    // console.log("Minutes:", time.getMinutes());
-
-    // Set the notification time immediately
     setNotificationTimeHour(time.getHours());
     setNotificationTimeMinute(time.getMinutes());
-
-    // Hide the date picker
     hideDatePicker();
   };
 
   const sendNotification = async () => {
     const currentDate = new Date();
-    // currentDate.setHours(0, 0, 0, 0);
-    // console.log("Current date:", currentDate);
 
-    // Check if periodStartDate is not null
     if (periodStartDate) {
       const notificationDate = new Date(periodStartDate);
       notificationDate.setDate(notificationDate.getDate() - 1);
-      // console.log("Notification time hour:", notificationTimeHour);
-      // console.log("Notification time minute:", notificationTimeMinute);
       notificationDate.setHours(notificationTimeHour, notificationTimeMinute);
-      // console.log("Notification date:", notificationDate);
-
-      // Calculate the time difference in milliseconds
       const timeDifference = notificationDate.getTime() - currentDate.getTime();
-      // console.log("Time difference:", timeDifference);
       if (timeDifference > 0) {
-        // Prepare the post body for NativeNotify API
         setTimeout(async () => {
           const notificationBody = {
             appId: 17728,
@@ -120,17 +103,14 @@ export default function Guidance({ session }) {
             title: "Upcoming Period",
             body: `Your period is expected to start tomorrow (${predictedStartDate}). Collect your free hygiene products from your nearest pickup location`,
             dateSent: new Date().toLocaleString(),
-            // You can add pushData or bigPictureURL if needed
           };
 
-          // Send a POST request to the NativeNotify API
           try {
             const response = await axios.post(
               "https://app.nativenotify.com/api/notification",
               notificationBody
             );
 
-            // Check the response and handle accordingly
             if (response.status === 201) {
               console.log(
                 "Notification sent successfully. Status:",
@@ -165,7 +145,7 @@ export default function Guidance({ session }) {
         console.error("Error fetching predicted data:", error.message);
       } else {
         if (data && data.length > 0) {
-          const prediction = data; // Assuming there is only one prediction
+          const prediction = data;
           setPredictedResults(prediction);
           setPredictedStartDate(formatDate(prediction[0].predicted_start_date));
           setPredictedEndDate(formatDate(prediction[0].predicted_end_date));
@@ -176,24 +156,19 @@ export default function Guidance({ session }) {
           );
           setPredictedOvulationDay(prediction[0].predicted_ovulation_day);
           setLutealPhaseCounter(prediction[0].shortLutealPhaseCounter);
-          const today = new Date(); // Create a new Date object
+          const today = new Date();
           today.setHours(0, 0, 0, 0);
-          // console.log("Today's date:", today);
           const predictedStartDate = new Date(
             prediction[0].predicted_start_date
           );
           predictedStartDate.setHours(0, 0, 0, 0);
-          // console.log("Predicted date:", predictedStartDate);
           setPeriodStartDate(predictedStartDate);
           const differenceInTime =
             predictedStartDate.getTime() - today.getTime();
-          // console.log("Difference in time:", differenceInTime);
           const differenceInDays = differenceInTime / (1000 * 3600 * 24);
-          // console.log("Difference in days:", differenceInDays);
           setDaysDifference(differenceInDays);
         } else {
           setPredictedResults(null);
-          // console.log("No predicted data found");
         }
       }
     } catch (error) {
@@ -202,11 +177,8 @@ export default function Guidance({ session }) {
   }
 
   useEffect(() => {
-    // Fetch predicted results from the database and set them to the state
-
     fetchPredictedData();
-    // sendNotification();
-  }, [predictedStartDate]); // Run the effect only once on component mount
+  }, [predictedStartDate]);
 
   return (
     <ImageBackground
@@ -256,7 +228,7 @@ export default function Guidance({ session }) {
               </Card>
               <View style={styles.HomePageAnimation}>
                 <LottieView
-                  source={CalendarAnimation} // Replace with your animation source
+                  source={CalendarAnimation}
                   autoPlay
                   loop
                   style={styles.CalendarAnimation}
@@ -319,7 +291,7 @@ export default function Guidance({ session }) {
           </Card>
           <View style={styles.HomePageAnimation}>
             <LottieView
-              source={LocationAnimation} // Replace with your animation source
+              source={LocationAnimation}
               autoPlay
               loop
               style={styles.LocationAnimation}
@@ -403,7 +375,7 @@ export default function Guidance({ session }) {
             </Card.Content>
             <View style={styles.HomePageAnimation}>
               <LottieView
-                source={TimeAnimation} // Replace with your animation source
+                source={TimeAnimation}
                 autoPlay
                 loop
                 style={styles.TimeAnimation}
